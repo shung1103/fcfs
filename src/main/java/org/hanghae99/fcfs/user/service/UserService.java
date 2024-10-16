@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.common.security.UserDetailsImpl;
 import org.hanghae99.fcfs.user.dto.PasswordRequestDto;
 import org.hanghae99.fcfs.user.dto.SignupRequestDto;
 import org.hanghae99.fcfs.user.dto.UserRequestDto;

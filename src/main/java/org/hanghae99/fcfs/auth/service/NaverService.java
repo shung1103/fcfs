@@ -34,10 +34,13 @@ public class NaverService {
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+
     @Value("${naver.client.id}")
     private String naverClientId;
+
     @Value("${naver.secret.id}")
     private String naverSecretId;
+
     public String naverLogin(String code) throws JsonProcessingException {
         // 여기까지는 들어옴
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -53,11 +56,10 @@ public class NaverService {
         String createToken = jwtUtil.createToken(naverUser.getUsername(), naverUser.getRole());
 
         // 5.기존의 토큰이 있다면 삭제
-        redisRefreshTokenRepository.findByUsername(naverUser.getUsername())
-                .ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
+        redisRefreshTokenRepository.findByUsername(naverUser.getUsername()).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
 
         // 6.리프레시 토큰 저장
-        String refreshTokenKey = tokens[1]+":refresh";
+        String refreshTokenKey = tokens[1] + ":refresh" + naverUser.getPasswordChangeCount();
         String createRefresh = redisRefreshTokenRepository.generateRefreshTokenInSocial(refreshTokenKey, naverUser.getUsername());
 
         return createToken;
@@ -132,19 +134,13 @@ public class NaverService {
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 
-        String id = jsonNode.get("response")
-                .get("id").asText();
-        String username = jsonNode.get("response")
-                .get("email").asText();
-        String nickname = jsonNode.get("response")
-                .get("email").asText();
-        String email = jsonNode.get("response")
-                .get("email").asText();
-        String phone = jsonNode.get("response")
-                .get("mobile").asText();
+        String id = jsonNode.get("response").get("id").asText();
+        String username = jsonNode.get("response").get("email").asText();
+        String email = jsonNode.get("response").get("email").asText();
+        String phone = jsonNode.get("response").get("mobile").asText();
         String social = "NAVER";
 
-        return new SocialUserInfoDto(id, username,email, nickname, phone,social);
+        return new SocialUserInfoDto(id, username, email, phone, social);
     }
     private User registerNaverUserIfNeeded(SocialUserInfoDto naverUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
@@ -168,9 +164,9 @@ public class NaverService {
 
                 //username으로 하기로 했음
                 String email = naverUserInfo.getEmail();
-                String username = email;
-                String nickname = email;
-                naverUser = new User(username,  encodedPassword, UserRoleEnum.USER, email, naverId, social);
+                String phone = naverUserInfo.getPhone();
+                String address = "need_update";
+                naverUser = new User(email,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address);
             }
             userRepository.save(naverUser);
         }

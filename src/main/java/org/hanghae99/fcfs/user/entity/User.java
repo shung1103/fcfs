@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.TimeStamped;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.user.dto.SignupRequestDto;
 import org.hanghae99.fcfs.user.dto.UserRequestDto;
 
 @Entity
@@ -43,6 +42,9 @@ public class User extends TimeStamped {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+    @Column(nullable = false)
+    private Integer passwordChangeCount;
+
     //회원가입 생성자
     public User(String username, String password, String address, String phone, String email, UserRoleEnum role) {
         this.username = username;
@@ -51,6 +53,7 @@ public class User extends TimeStamped {
         this.phone = phone;
         this.email = email;
         this.role = role;
+        this.passwordChangeCount = 0;
     }
 
     public void updateProfile(UserRequestDto userRequestDto) {
@@ -60,15 +63,25 @@ public class User extends TimeStamped {
 
     public void updatePassword(String password) {
         this.password = password;
+        this.passwordChangeCount++;
     }
 
     //소셜 회원가입 생성자
-    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social) {
+    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social, String phone, String address) {
         this.username = username;
         this.password = password;
-        this.role = role;
-        this.email = email;
+        this.address = address;
+        this.phone = phone;
         this.socialId = socialId;
         this.social = social;
+        this.email = email;
+        this.role = role;
+        this.passwordChangeCount = 0;
+    }
+
+    public User socialUpdate(String socialId, String social) {
+        this.socialId = socialId;
+        this.social = social;
+        return this;
     }
 }

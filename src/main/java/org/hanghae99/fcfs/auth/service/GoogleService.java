@@ -53,8 +53,7 @@ public class GoogleService {
         String createToken = jwtUtil.createToken(googleUser.getUsername(), googleUser.getRole());
 
         // 5.기존의 토큰이 있다면 삭제
-        redisRefreshTokenRepository.findByUsername(googleUser.getUsername())
-                .ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
+        redisRefreshTokenRepository.findByUsername(googleUser.getUsername()).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
 
         // 6.리프레시 토큰 저장
         redisRefreshTokenRepository.generateRefreshToken(googleUser.getUsername());
@@ -127,11 +126,9 @@ public class GoogleService {
         String id = jsonNode.get("id").asText();
         String username = jsonNode.get("email").asText();
         String email = jsonNode.get("email").asText();
-        String nickname = jsonNode.get("email").asText();
         String social = "GOOGLE";
 
-
-        return new SocialUserInfoDto(id, username, email, nickname, social);
+        return new SocialUserInfoDto(id, username, email, social);
     }
 
     // 3) 구글 ID 정보로 회원가입
@@ -157,9 +154,9 @@ public class GoogleService {
 
                 // email: 구글 email
                 String email = googleUserInfoDto.getEmail();
-                String username = email;
-                String nickname = email;
-                googleUser = new User(username, encodedPassword, UserRoleEnum.USER, email, googleId, social);
+                String phone = "need_update";
+                String address = "need_update";
+                googleUser = new User(email, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address);
             }
             userRepository.save(googleUser);
         }

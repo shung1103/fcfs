@@ -35,8 +35,10 @@ public class KakaoService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+
     @Value("${kakao.client.id}")
     private String kakaoClientId;
+
     public String kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
@@ -52,11 +54,10 @@ public class KakaoService {
 
 
         // 5.기존의 토큰이 있다면 삭제
-        redisRefreshTokenRepository.findByUsername(kakaoUser.getUsername())
-                .ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
+        redisRefreshTokenRepository.findByUsername(kakaoUser.getUsername()).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
 
         // 6.레디스에 리프레시 토큰 저장
-        String refreshTokenKey = tokens[1]+":refresh";
+        String refreshTokenKey = tokens[1] + ":refresh" + kakaoUser.getPasswordChangeCount();
         redisRefreshTokenRepository.generateRefreshTokenInSocial(refreshTokenKey, kakaoUser.getUsername());
 
         return createToken;
@@ -136,17 +137,14 @@ public class KakaoService {
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 
         String id = jsonNode.get("id").asText();
-        String username = jsonNode.get("kakao_account")
-                .get("email").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
-        String nickname = jsonNode.get("kakao_account")
-                .get("email").asText();
+        String username = jsonNode.get("kakao_account").get("email").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
+        String phone = jsonNode.get("kakao_account").get("phone_number").asText();
         String social = "KAKAO";
 
         log.info("카카오 사용자 정보: " + id + ", " + email);
 
-        return new SocialUserInfoDto(id, username,email, nickname,social);
+        return new SocialUserInfoDto(id, username, email, phone, social);
     }
 
 
@@ -171,9 +169,9 @@ public class KakaoService {
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
                 String email = kakaoUserInfo.getEmail();
-                String username = email;
-                String nickname = email;
-                kakaoUser = new User(username,  encodedPassword, UserRoleEnum.USER, email,kakaoId, social);
+                String phone = kakaoUserInfo.getPhone();
+                String address = "need_update";
+                kakaoUser = new User(email,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address);
             }
             userRepository.save(kakaoUser);
         }
