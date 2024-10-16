@@ -58,9 +58,7 @@ public class RedisRefreshTokenRepository {
                 }
 
         }
-
         refreshTokenKeys.close();
-
         return Optional.empty();
     }
 
@@ -86,10 +84,7 @@ public class RedisRefreshTokenRepository {
                 redisTemplate.delete(refreshToken);
 
             }
-
-
         }
-
         refreshTokenKeys.close();
     }
 

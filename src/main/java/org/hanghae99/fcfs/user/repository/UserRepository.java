@@ -1,5 +1,6 @@
 package org.hanghae99.fcfs.user.repository;
 
+import jakarta.validation.constraints.Pattern;
 import org.hanghae99.fcfs.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,4 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     Optional<User> findByEmail(String email);
+
+    boolean existsByUsername(@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{4,}$") String username);
+
+    boolean existsByEmail(@Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "유효하지 않은 이메일 주소입니다.") String email);
 }

@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -54,7 +55,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정
-        http.csrf((csrf) -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
@@ -67,28 +68,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                         .requestMatchers("/api/user/info/password","/user/info/password").permitAll()
                         .requestMatchers("/api/user/info/username","/user/info/username").permitAll()
-                        .requestMatchers("/app/chat/**").permitAll()
-                        .requestMatchers("/api/chat/saveMessages/**", "/api/chat/getMessages/**", "/api/notifications/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/product").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
-                        .requestMatchers("/", "/login","/signup","/api/mail","/api/auth/**","/api/user/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/", "/login","/signup","/api/mail","/api/auth/**").permitAll()
 
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
-
-//        //로그 아웃
-//        http.logout((logout ->
-//                logout.logoutUrl("/api/auth/logout")
-//                        .invalidateHttpSession(true)
-//                        .deleteCookies("Authorization")
-//                        .addLogoutHandler(tokenLogoutHandler)
-//                        .logoutSuccessHandler((request, response, authentication) -> {
-//                            // 아무런 응답을 하지 않도록 처리
-//                        })));
-
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

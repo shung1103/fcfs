@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil, RedisRefreshTokenRepository redisRefreshTokenRepository) {
         this.jwtUtil = jwtUtil;
-        setFilterProcessesUrl("/login");
+        setFilterProcessesUrl("/api/user/login");
         this.redisRefreshTokenRepository = redisRefreshTokenRepository;
     }
 
@@ -58,8 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //스웨거는 헤더에 토큰이있어야한다.
         response.addHeader("Authorization",token);
 
-        redisRefreshTokenRepository.findByUsername(username)
-                .ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
+        redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
         redisRefreshTokenRepository.generateRefreshToken(username);
     }
 

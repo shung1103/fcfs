@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.TimeStamped;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.user.dto.SignupRequestDto;
+import org.hanghae99.fcfs.user.dto.UserRequestDto;
 
 @Entity
 @Getter
@@ -29,6 +30,12 @@ public class User extends TimeStamped {
     @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = true)
+    private String socialId;
+
+    @Column(nullable = true)
+    private String social;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -37,12 +44,31 @@ public class User extends TimeStamped {
     private UserRoleEnum role;
 
     //회원가입 생성자
-    public User(SignupRequestDto requestDto, UserRoleEnum role) {
-        this.username = requestDto.getUsername();
-        this.password = requestDto.getPassword();
-        this.address = requestDto.getAddress();
-        this.phone = requestDto.getPhone();
-        this.email = requestDto.getEmail();
+    public User(String username, String password, String address, String phone, String email, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
         this.role = role;
+    }
+
+    public void updateProfile(UserRequestDto userRequestDto) {
+        this.address = userRequestDto.getAddress();
+        this.phone = userRequestDto.getPhone();
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    //소셜 회원가입 생성자
+    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.socialId = socialId;
+        this.social = social;
     }
 }
