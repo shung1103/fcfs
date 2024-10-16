@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
+import org.hanghae99.fcfs.common.config.VigenereCipher;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -138,6 +139,7 @@ public class GoogleService {
         String social = googleUserInfoDto.getSocial();
         User googleUser = userRepository.findBySocialIdAndSocial(googleId, social).orElse(null);
 
+        googleId = VigenereCipher.encrypt(googleId);
         if (googleUser == null) {
             // 구글 사용자 email 동일한 email 가진 회원이 있는지 확인
             String googleUsername = googleUserInfoDto.getEmail();
@@ -153,10 +155,10 @@ public class GoogleService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 // email: 구글 email
-                String email = googleUserInfoDto.getEmail();
-                String phone = "need_update";
-                String address = "need_update";
-                googleUser = new User(email, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address);
+                String email = VigenereCipher.encrypt(googleUserInfoDto.getEmail());
+                String phone = VigenereCipher.encrypt("need_update");
+                String address = VigenereCipher.encrypt("need_update");
+                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address);
             }
             userRepository.save(googleUser);
         }

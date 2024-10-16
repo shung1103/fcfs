@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
+import org.hanghae99.fcfs.common.config.VigenereCipher;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -155,6 +156,7 @@ public class KakaoService {
         String social = kakaoUserInfo.getSocial();
         User kakaoUser = userRepository.findBySocialIdAndSocial(kakaoId,social).orElse(null);
 
+        kakaoId = VigenereCipher.encrypt(kakaoId);
         if (kakaoUser == null) {
             // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
             String kakaoUsername = kakaoUserInfo.getEmail();
@@ -168,10 +170,10 @@ public class KakaoService {
                 // password: random UUID
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
-                String email = kakaoUserInfo.getEmail();
-                String phone = kakaoUserInfo.getPhone();
-                String address = "need_update";
-                kakaoUser = new User(email,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address);
+                String email = VigenereCipher.encrypt(kakaoUserInfo.getEmail());
+                String phone = VigenereCipher.encrypt(kakaoUserInfo.getPhone());
+                String address = VigenereCipher.encrypt("need_update");
+                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address);
             }
             userRepository.save(kakaoUser);
         }

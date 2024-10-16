@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
+import org.hanghae99.fcfs.common.config.VigenereCipher;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -148,6 +149,7 @@ public class NaverService {
         String social = naverUserInfo.getSocial();
         User naverUser = userRepository.findBySocialIdAndSocial(naverId, social).orElse(null);
 
+        naverId = VigenereCipher.encrypt(naverId);
         if (naverUser == null) {
             // 네이버 사용자  (username) 동일한  (username) 가진 회원이 있는지 확인
             String naverUsername = naverUserInfo.getEmail();
@@ -163,10 +165,10 @@ public class NaverService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 //username으로 하기로 했음
-                String email = naverUserInfo.getEmail();
-                String phone = naverUserInfo.getPhone();
-                String address = "need_update";
-                naverUser = new User(email,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address);
+                String email = VigenereCipher.encrypt(naverUserInfo.getEmail());
+                String phone = VigenereCipher.encrypt(naverUserInfo.getPhone());
+                String address = VigenereCipher.encrypt("need_update");
+                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address);
             }
             userRepository.save(naverUser);
         }

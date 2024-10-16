@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
+import org.hanghae99.fcfs.common.config.VigenereCipher;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.user.dto.PasswordRequestDto;
@@ -36,9 +37,10 @@ public class UserService {
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String address = passwordEncoder.encode(requestDto.getAddress());
-        String phone = passwordEncoder.encode(requestDto.getPhone());
-        String email = passwordEncoder.encode(requestDto.getEmail());
+        String realName = VigenereCipher.encrypt(requestDto.getRealName());
+        String address = VigenereCipher.encrypt(requestDto.getAddress());
+        String phone = VigenereCipher.encrypt(requestDto.getPhone());
+        String email = VigenereCipher.encrypt(requestDto.getEmail());
 
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
@@ -57,7 +59,7 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        User user = new User(username, password, address, phone, email, role);
+        User user = new User(username, password, realName, address, phone, email, role);
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
@@ -70,11 +72,17 @@ public class UserService {
 
     public UserResponseDto getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 유저 번호입니다."));
-        return new UserResponseDto(user);
+        String email = VigenereCipher.decrypt(user.getEmail());
+        String realName = VigenereCipher.decrypt(user.getRealName());
+        String address = VigenereCipher.decrypt(user.getAddress());
+        String phone = VigenereCipher.decrypt(user.getPhone());
+        return new UserResponseDto(user, email, realName, address, phone);
     }
 
     public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) {
-        user.updateProfile(userRequestDto);
+        String address = VigenereCipher.encrypt(userRequestDto.getAddress());
+        String phone = VigenereCipher.encrypt(userRequestDto.getPhone());
+        user.updateProfile(address, phone);
         return new UserResponseDto(userRepository.save(user));
     }
 
@@ -82,7 +90,7 @@ public class UserService {
         String currentPassword = passwordEncoder.encode(passwordRequestDto.getCurrentPassword());
         String newPassword = passwordEncoder.encode(passwordRequestDto.getNewPassword());
 
-        if (currentPassword.equals(user.getPassword())) {
+        if (passwordEncoder.matches(currentPassword, user.getPassword())) {
             user.updatePassword(newPassword);
             userRepository.save(user);
         } else {

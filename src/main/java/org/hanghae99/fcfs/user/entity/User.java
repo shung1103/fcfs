@@ -24,6 +24,9 @@ public class User extends TimeStamped {
     private String password;
 
     @Column(nullable = false)
+    private String realName;
+
+    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
@@ -46,9 +49,10 @@ public class User extends TimeStamped {
     private Integer passwordChangeCount;
 
     //회원가입 생성자
-    public User(String username, String password, String address, String phone, String email, UserRoleEnum role) {
+    public User(String username, String password, String realName, String address, String phone, String email, UserRoleEnum role) {
         this.username = username;
         this.password = password;
+        this.realName = realName;
         this.address = address;
         this.phone = phone;
         this.email = email;
@@ -56,9 +60,9 @@ public class User extends TimeStamped {
         this.passwordChangeCount = 0;
     }
 
-    public void updateProfile(UserRequestDto userRequestDto) {
-        this.address = userRequestDto.getAddress();
-        this.phone = userRequestDto.getPhone();
+    public void updateProfile(String address, String phone) {
+        this.address = address;
+        this.phone = phone;
     }
 
     public void updatePassword(String password) {
