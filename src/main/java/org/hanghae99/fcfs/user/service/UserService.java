@@ -1,18 +1,15 @@
 package org.hanghae99.fcfs.user.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
-import org.hanghae99.fcfs.common.config.VigenereCipher;
+import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
-import org.hanghae99.fcfs.common.security.UserDetailsImpl;
 import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
@@ -20,12 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JavaMailSender javaMailSender;
-    private final VigenereCipher vigenereCipher;
+    private final AES128 aes128;
     private final JwtUtil jwtUtil;
 
     private static final String senderEmail= "hoooly1103@gmail.com";
@@ -44,13 +42,13 @@ public class UserService {
     @Value("${ADMIN_TOKEN}")
     private String ADMIN_TOKEN;
 
-    public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) {
+    public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String realName = VigenereCipher.encrypt(requestDto.getRealName(), vigenereCipher.key);
-        String address = VigenereCipher.encrypt(requestDto.getAddress(), vigenereCipher.key);
-        String phone = VigenereCipher.encrypt(requestDto.getPhone(), vigenereCipher.key);
-        String email = VigenereCipher.encrypt(requestDto.getEmail(), vigenereCipher.key);
+        String realName = aes128.encryptAes(requestDto.getRealName());
+        String address = aes128.encryptAes(requestDto.getAddress());
+        String phone = aes128.encryptAes(requestDto.getPhone());
+        String email = aes128.encryptAes(requestDto.getEmail());
 
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
@@ -104,17 +102,17 @@ public class UserService {
         redisRefreshTokenRepository.deleteRefreshToken(username);
     }
 
-    public UserResponseDto getUser(User user) {
-        String email = VigenereCipher.decrypt(user.getEmail(), vigenereCipher.key);
-        String realName = VigenereCipher.decrypt(user.getRealName(), vigenereCipher.key);
-        String address = VigenereCipher.decrypt(user.getAddress(), vigenereCipher.key);
-        String phone = VigenereCipher.decrypt(user.getPhone(), vigenereCipher.key);
+    public UserResponseDto getUser(User user) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        String email = aes128.decryptAes(user.getEmail());
+        String realName = aes128.decryptAes(user.getRealName());
+        String address = aes128.decryptAes(user.getAddress());
+        String phone = aes128.decryptAes(user.getPhone());
         return new UserResponseDto(user, email, realName, address, phone);
     }
 
-    public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) {
-        String address = VigenereCipher.encrypt(userRequestDto.getAddress(), vigenereCipher.key);
-        String phone = VigenereCipher.encrypt(userRequestDto.getPhone(), vigenereCipher.key);
+    public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        String address = aes128.encryptAes(userRequestDto.getAddress());
+        String phone = aes128.encryptAes(userRequestDto.getPhone());
         user.updateProfile(address, phone);
         return new UserResponseDto(userRepository.save(user));
     }

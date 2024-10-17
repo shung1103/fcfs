@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
-import org.hanghae99.fcfs.common.config.VigenereCipher;
+import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -23,7 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.net.URI;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.UUID;
 
 @Slf4j(topic = "NAVER Login")
@@ -35,7 +39,7 @@ public class NaverService {
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
-    private final VigenereCipher vigenereCipher;
+    private final AES128 aes128;
 
     @Value("${naver.client.id}")
     private String naverClientId;
@@ -43,7 +47,7 @@ public class NaverService {
     @Value("${naver.secret.id}")
     private String naverSecretId;
 
-    public String naverLogin(String code) throws JsonProcessingException {
+    public String naverLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 여기까지는 들어옴
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
@@ -146,13 +150,13 @@ public class NaverService {
         return new SocialUserInfoDto(id, username, email, phone, social, name);
     }
 
-    private User registerNaverUserIfNeeded(SocialUserInfoDto naverUserInfo) {
+    private User registerNaverUserIfNeeded(SocialUserInfoDto naverUserInfo) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String naverId = naverUserInfo.getId();
         String social = naverUserInfo.getSocial();
         User naverUser = userRepository.findBySocialIdAndSocial(naverId, social).orElse(null);
 
-        naverId = VigenereCipher.encrypt(naverId, vigenereCipher.key);
+        naverId = aes128.encryptAes(naverId);
         if (naverUser == null) {
             // 네이버 사용자  (username) 동일한  (username) 가진 회원이 있는지 확인
             String naverUsername = naverUserInfo.getEmail();
@@ -168,10 +172,10 @@ public class NaverService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 //username으로 하기로 했음
-                String email = VigenereCipher.encrypt(naverUserInfo.getEmail(), vigenereCipher.key);
-                String phone = VigenereCipher.encrypt(naverUserInfo.getPhone(), vigenereCipher.key);
-                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
-                String name = VigenereCipher.encrypt(naverUserInfo.getName(), vigenereCipher.key);
+                String email = aes128.encryptAes(naverUserInfo.getEmail());
+                String phone = aes128.encryptAes(naverUserInfo.getPhone());
+                String address = aes128.encryptAes("need_update");
+                String name = aes128.encryptAes(naverUserInfo.getName());
                 naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address, name);
             }
             userRepository.save(naverUser);

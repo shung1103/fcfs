@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
-import org.hanghae99.fcfs.common.config.VigenereCipher;
+import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -23,7 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.net.URI;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.UUID;
 
 @Slf4j(topic = "KAKAO Login")
@@ -36,12 +40,12 @@ public class KakaoService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
-    private final VigenereCipher vigenereCipher;
+    private final AES128 aes128;
 
     @Value("${kakao.client.id}")
     private String kakaoClientId;
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    public String kakaoLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
 
@@ -150,13 +154,13 @@ public class KakaoService {
     }
 
     // 3) 카카오 ID 정보로 회원가입
-    private User registerKakaoUserIfNeeded(SocialUserInfoDto kakaoUserInfo) {
+    private User registerKakaoUserIfNeeded(SocialUserInfoDto kakaoUserInfo) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String kakaoId = kakaoUserInfo.getId();
         String social = kakaoUserInfo.getSocial();
         User kakaoUser = userRepository.findBySocialIdAndSocial(kakaoId,social).orElse(null);
 
-        kakaoId = VigenereCipher.encrypt(kakaoId, vigenereCipher.key);
+        kakaoId = aes128.encryptAes(kakaoId);
         if (kakaoUser == null) {
             // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
             String kakaoUsername = kakaoUserInfo.getEmail();
@@ -170,10 +174,10 @@ public class KakaoService {
                 // password: random UUID
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
-                String email = VigenereCipher.encrypt(kakaoUserInfo.getEmail(), vigenereCipher.key);
-                String phone = VigenereCipher.encrypt(kakaoUserInfo.getPhone(), vigenereCipher.key);
-                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
-                String realName = VigenereCipher.encrypt(kakaoUserInfo.getName(), vigenereCipher.key);
+                String email = aes128.encryptAes(kakaoUserInfo.getEmail());
+                String phone = aes128.encryptAes(kakaoUserInfo.getPhone());
+                String address = aes128.encryptAes("need_update");
+                String realName = aes128.encryptAes(kakaoUserInfo.getName());
                 kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address, realName);
             }
             userRepository.save(kakaoUser);

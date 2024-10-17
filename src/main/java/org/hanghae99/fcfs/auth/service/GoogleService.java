@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
-import org.hanghae99.fcfs.common.config.VigenereCipher;
+import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
@@ -21,7 +21,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.net.URI;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.UUID;
 
 @Slf4j(topic = "Google Login")
@@ -34,7 +38,7 @@ public class GoogleService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
-    private final VigenereCipher vigenereCipher;
+    private final AES128 aes128;
 
     @Value("${google.client.id}")
     private String googleClientId;
@@ -42,7 +46,7 @@ public class GoogleService {
     @Value("${google.secret.id}")
     private String googleSecretId;
 
-    public String googleLogin(String code) throws JsonProcessingException {
+    public String googleLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
 
@@ -135,13 +139,13 @@ public class GoogleService {
     }
 
     // 3) 구글 ID 정보로 회원가입
-    private User registerGoogleUserIfNeeded(SocialUserInfoDto googleUserInfoDto) {
+    private User registerGoogleUserIfNeeded(SocialUserInfoDto googleUserInfoDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 구글 Id 가 있는지 확인
         String googleId = googleUserInfoDto.getId();
         String social = googleUserInfoDto.getSocial();
         User googleUser = userRepository.findBySocialIdAndSocial(googleId, social).orElse(null);
 
-        googleId = VigenereCipher.encrypt(googleId, vigenereCipher.key);
+        googleId = aes128.encryptAes(googleId);
         if (googleUser == null) {
             // 구글 사용자 email 동일한 email 가진 회원이 있는지 확인
             String googleUsername = googleUserInfoDto.getEmail();
@@ -157,10 +161,10 @@ public class GoogleService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 // email: 구글 email
-                String email = VigenereCipher.encrypt(googleUserInfoDto.getEmail(), vigenereCipher.key);
-                String phone = VigenereCipher.encrypt("need_update", vigenereCipher.key);
-                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
-                String realName = VigenereCipher.encrypt(googleUserInfoDto.getName(), vigenereCipher.key);
+                String email = aes128.encryptAes(googleUserInfoDto.getEmail());
+                String phone = aes128.encryptAes("need_update");
+                String address = aes128.encryptAes("need_update");
+                String realName = aes128.encryptAes(googleUserInfoDto.getName());
                 googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address, realName);
             }
             userRepository.save(googleUser);

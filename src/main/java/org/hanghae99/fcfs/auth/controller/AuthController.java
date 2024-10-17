@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -24,7 +29,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/naver/login")
-    public RedirectView naverLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public RedirectView naverLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = naverService.naverLogin(code);
         jwtUtil.addJwtToCookie(token, response);
@@ -32,7 +37,7 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/login")
-    public RedirectView kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public RedirectView kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = kakaoService.kakaoLogin(code);
         jwtUtil.addJwtToCookie(token, response);
@@ -40,7 +45,7 @@ public class AuthController {
     }
 
     @GetMapping("/google/login")
-    public RedirectView googleLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public RedirectView googleLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = googleService.googleLogin(code);
         jwtUtil.addJwtToCookie(token, response);
