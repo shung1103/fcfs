@@ -1,24 +1,31 @@
 package org.hanghae99.fcfs.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.config.VigenereCipher;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.user.dto.PasswordRequestDto;
-import org.hanghae99.fcfs.user.dto.SignupRequestDto;
-import org.hanghae99.fcfs.user.dto.UserRequestDto;
-import org.hanghae99.fcfs.user.dto.UserResponseDto;
+import org.hanghae99.fcfs.common.security.JwtUtil;
+import org.hanghae99.fcfs.common.security.UserDetailsImpl;
+import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +35,8 @@ public class UserService {
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JavaMailSender javaMailSender;
     private final VigenereCipher vigenereCipher;
+    private final JwtUtil jwtUtil;
+
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
 
@@ -66,6 +75,30 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
     }
 
+    public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        UserRoleEnum role = user.getRole();
+
+        String token = jwtUtil.createToken(username, role);
+        jwtUtil.addJwtToCookie(token, response);
+
+        //스웨거는 헤더에 토큰이있어야한다.
+        response.addHeader("Authorization",token);
+
+        redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
+        redisRefreshTokenRepository.generateRefreshToken(username);
+
+        return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
+    }
+
     public void logout(User user) {
         String username = user.getUsername();
         redisRefreshTokenRepository.deleteRefreshToken(username);
@@ -88,7 +121,7 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponseDto> updatePassword(User user, PasswordRequestDto passwordRequestDto) {
-        String currentPassword = passwordEncoder.encode(passwordRequestDto.getCurrentPassword());
+        String currentPassword = passwordRequestDto.getCurrentPassword();
         String newPassword = passwordEncoder.encode(passwordRequestDto.getNewPassword());
 
         if (passwordEncoder.matches(currentPassword, user.getPassword())) {

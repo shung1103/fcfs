@@ -1,15 +1,14 @@
 package org.hanghae99.fcfs.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.security.UserDetailsImpl;
-import org.hanghae99.fcfs.user.dto.PasswordRequestDto;
-import org.hanghae99.fcfs.user.dto.SignupRequestDto;
-import org.hanghae99.fcfs.user.dto.UserRequestDto;
-import org.hanghae99.fcfs.user.dto.UserResponseDto;
+import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,20 @@ public class UserController {
         return userService.signup(signupRequestDto);
     }
 
-    @Operation(summary = "로그 아웃")
+    @Operation(summary = "로그인")
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) {
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        if(!fieldErrors.isEmpty()) {
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
+            }
+            throw new IllegalArgumentException("형식에 맞게 입력해주세요");
+        }
+        return userService.login(loginRequestDto, request, response);
+    }
+
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.logout(userDetails.getUser()) ;
@@ -60,7 +72,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser(), userRequestDto));
     }
 
-    @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그 아웃")
+    @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto) {
         return userService.updatePassword(userDetails.getUser(), passwordRequestDto);
