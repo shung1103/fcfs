@@ -34,6 +34,7 @@ public class GoogleService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final VigenereCipher vigenereCipher;
 
     @Value("${google.client.id}")
     private String googleClientId;
@@ -140,7 +141,7 @@ public class GoogleService {
         String social = googleUserInfoDto.getSocial();
         User googleUser = userRepository.findBySocialIdAndSocial(googleId, social).orElse(null);
 
-        googleId = VigenereCipher.encrypt(googleId);
+        googleId = VigenereCipher.encrypt(googleId, vigenereCipher.key);
         if (googleUser == null) {
             // 구글 사용자 email 동일한 email 가진 회원이 있는지 확인
             String googleUsername = googleUserInfoDto.getEmail();
@@ -156,10 +157,10 @@ public class GoogleService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 // email: 구글 email
-                String email = VigenereCipher.encrypt(googleUserInfoDto.getEmail());
-                String phone = VigenereCipher.encrypt("need_update");
-                String address = VigenereCipher.encrypt("need_update");
-                String realName = VigenereCipher.encrypt(googleUserInfoDto.getName());
+                String email = VigenereCipher.encrypt(googleUserInfoDto.getEmail(), vigenereCipher.key);
+                String phone = VigenereCipher.encrypt("need_update", vigenereCipher.key);
+                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
+                String realName = VigenereCipher.encrypt(googleUserInfoDto.getName(), vigenereCipher.key);
                 googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address, realName);
             }
             userRepository.save(googleUser);

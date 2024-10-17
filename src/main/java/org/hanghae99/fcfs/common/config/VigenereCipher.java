@@ -5,15 +5,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VigenereCipher {
-    @Value("${vigenere.cipher.key}")
-    private static String key;
 
-    //	Encryption
+    @Value("${vigenere.cipher.key}")
+    public String key;
+
     //	Encryption Logic: Using ASCII Dec Representation:
-    //	Example:
     //	ASCII: "H" is 72 && "S" is 83
     //	((72-65) + (83-65)) % 26 + 65 >> Encrypted "Z"
-    public static String encrypt(String plainText) {
+    public static String encrypt(String plainText, String key) {
         StringBuilder sb = new StringBuilder();
         plainText = plainText.toUpperCase();
         int bIdx = 0;
@@ -29,12 +28,10 @@ public class VigenereCipher {
         return sb.toString();
     }
 
-    //	Decryption
     //	Decryption Logic: Using ASCII Dec Representation:
-    //	Example:
     //	ASCII: "Z" is 90 && "S" is 83
     //	(90-83+26) % 26 + 65 >> Encrypted "Z"
-    public static String decrypt(String cipherText) {
+    public static String decrypt(String cipherText, String key) {
         StringBuilder sb = new StringBuilder();
         cipherText = cipherText.toUpperCase();
         int bIdx = 0;

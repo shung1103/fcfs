@@ -35,6 +35,7 @@ public class NaverService {
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final VigenereCipher vigenereCipher;
 
     @Value("${naver.client.id}")
     private String naverClientId;
@@ -151,7 +152,7 @@ public class NaverService {
         String social = naverUserInfo.getSocial();
         User naverUser = userRepository.findBySocialIdAndSocial(naverId, social).orElse(null);
 
-        naverId = VigenereCipher.encrypt(naverId);
+        naverId = VigenereCipher.encrypt(naverId, vigenereCipher.key);
         if (naverUser == null) {
             // 네이버 사용자  (username) 동일한  (username) 가진 회원이 있는지 확인
             String naverUsername = naverUserInfo.getEmail();
@@ -167,10 +168,10 @@ public class NaverService {
                 String encodedPassword = passwordEncoder.encode(password);
 
                 //username으로 하기로 했음
-                String email = VigenereCipher.encrypt(naverUserInfo.getEmail());
-                String phone = VigenereCipher.encrypt(naverUserInfo.getPhone());
-                String address = VigenereCipher.encrypt("need_update");
-                String name = VigenereCipher.encrypt(naverUserInfo.getName());
+                String email = VigenereCipher.encrypt(naverUserInfo.getEmail(), vigenereCipher.key);
+                String phone = VigenereCipher.encrypt(naverUserInfo.getPhone(), vigenereCipher.key);
+                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
+                String name = VigenereCipher.encrypt(naverUserInfo.getName(), vigenereCipher.key);
                 naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address, name);
             }
             userRepository.save(naverUser);

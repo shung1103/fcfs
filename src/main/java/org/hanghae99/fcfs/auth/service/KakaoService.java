@@ -36,6 +36,7 @@ public class KakaoService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final VigenereCipher vigenereCipher;
 
     @Value("${kakao.client.id}")
     private String kakaoClientId;
@@ -155,7 +156,7 @@ public class KakaoService {
         String social = kakaoUserInfo.getSocial();
         User kakaoUser = userRepository.findBySocialIdAndSocial(kakaoId,social).orElse(null);
 
-        kakaoId = VigenereCipher.encrypt(kakaoId);
+        kakaoId = VigenereCipher.encrypt(kakaoId, vigenereCipher.key);
         if (kakaoUser == null) {
             // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
             String kakaoUsername = kakaoUserInfo.getEmail();
@@ -169,10 +170,10 @@ public class KakaoService {
                 // password: random UUID
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
-                String email = VigenereCipher.encrypt(kakaoUserInfo.getEmail());
-                String phone = VigenereCipher.encrypt(kakaoUserInfo.getPhone());
-                String address = VigenereCipher.encrypt("need_update");
-                String realName = VigenereCipher.encrypt(kakaoUserInfo.getName());
+                String email = VigenereCipher.encrypt(kakaoUserInfo.getEmail(), vigenereCipher.key);
+                String phone = VigenereCipher.encrypt(kakaoUserInfo.getPhone(), vigenereCipher.key);
+                String address = VigenereCipher.encrypt("need_update", vigenereCipher.key);
+                String realName = VigenereCipher.encrypt(kakaoUserInfo.getName(), vigenereCipher.key);
                 kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address, realName);
             }
             userRepository.save(kakaoUser);

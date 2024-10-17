@@ -27,6 +27,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JavaMailSender javaMailSender;
+    private final VigenereCipher vigenereCipher;
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
 
@@ -37,10 +38,10 @@ public class UserService {
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String realName = VigenereCipher.encrypt(requestDto.getRealName());
-        String address = VigenereCipher.encrypt(requestDto.getAddress());
-        String phone = VigenereCipher.encrypt(requestDto.getPhone());
-        String email = VigenereCipher.encrypt(requestDto.getEmail());
+        String realName = VigenereCipher.encrypt(requestDto.getRealName(), vigenereCipher.key);
+        String address = VigenereCipher.encrypt(requestDto.getAddress(), vigenereCipher.key);
+        String phone = VigenereCipher.encrypt(requestDto.getPhone(), vigenereCipher.key);
+        String email = VigenereCipher.encrypt(requestDto.getEmail(), vigenereCipher.key);
 
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
@@ -72,16 +73,16 @@ public class UserService {
 
     public UserResponseDto getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 유저 번호입니다."));
-        String email = VigenereCipher.decrypt(user.getEmail());
-        String realName = VigenereCipher.decrypt(user.getRealName());
-        String address = VigenereCipher.decrypt(user.getAddress());
-        String phone = VigenereCipher.decrypt(user.getPhone());
+        String email = VigenereCipher.decrypt(user.getEmail(), vigenereCipher.key);
+        String realName = VigenereCipher.decrypt(user.getRealName(), vigenereCipher.key);
+        String address = VigenereCipher.decrypt(user.getAddress(), vigenereCipher.key);
+        String phone = VigenereCipher.decrypt(user.getPhone(), vigenereCipher.key);
         return new UserResponseDto(user, email, realName, address, phone);
     }
 
     public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) {
-        String address = VigenereCipher.encrypt(userRequestDto.getAddress());
-        String phone = VigenereCipher.encrypt(userRequestDto.getPhone());
+        String address = VigenereCipher.encrypt(userRequestDto.getAddress(), vigenereCipher.key);
+        String phone = VigenereCipher.encrypt(userRequestDto.getPhone(), vigenereCipher.key);
         user.updateProfile(address, phone);
         return new UserResponseDto(userRepository.save(user));
     }
@@ -121,7 +122,6 @@ public class UserService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
         return message;
     }
 
