@@ -139,10 +139,12 @@ public class NaverService {
         String username = jsonNode.get("response").get("email").asText();
         String email = jsonNode.get("response").get("email").asText();
         String phone = jsonNode.get("response").get("mobile").asText();
+        String name = jsonNode.get("response").get("name").asText();
         String social = "NAVER";
 
-        return new SocialUserInfoDto(id, username, email, phone, social);
+        return new SocialUserInfoDto(id, username, email, phone, social, name);
     }
+
     private User registerNaverUserIfNeeded(SocialUserInfoDto naverUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String naverId = naverUserInfo.getId();
@@ -168,7 +170,8 @@ public class NaverService {
                 String email = VigenereCipher.encrypt(naverUserInfo.getEmail());
                 String phone = VigenereCipher.encrypt(naverUserInfo.getPhone());
                 String address = VigenereCipher.encrypt("need_update");
-                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address);
+                String name = VigenereCipher.encrypt(naverUserInfo.getName());
+                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address, name);
             }
             userRepository.save(naverUser);
         }

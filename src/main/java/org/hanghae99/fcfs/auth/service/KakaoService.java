@@ -64,7 +64,6 @@ public class KakaoService {
         return createToken;
     }
 
-
     // 애플리케이션은 인증 코드로 카카오 서버에 토큰을 요청하고, 토큰을 전달 받습니다.
     // 1) 액세스 토큰 요청 메서드
     public String[] getToken(String code) throws JsonProcessingException {
@@ -141,13 +140,13 @@ public class KakaoService {
         String username = jsonNode.get("kakao_account").get("email").asText();
         String email = jsonNode.get("kakao_account").get("email").asText();
         String phone = jsonNode.get("kakao_account").get("phone_number").asText();
+        String name = jsonNode.get("kakao_account").get("name").asText();
         String social = "KAKAO";
 
         log.info("카카오 사용자 정보: " + id + ", " + email);
 
-        return new SocialUserInfoDto(id, username, email, phone, social);
+        return new SocialUserInfoDto(id, username, email, phone, social, name);
     }
-
 
     // 3) 카카오 ID 정보로 회원가입
     private User registerKakaoUserIfNeeded(SocialUserInfoDto kakaoUserInfo) {
@@ -173,7 +172,8 @@ public class KakaoService {
                 String email = VigenereCipher.encrypt(kakaoUserInfo.getEmail());
                 String phone = VigenereCipher.encrypt(kakaoUserInfo.getPhone());
                 String address = VigenereCipher.encrypt("need_update");
-                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address);
+                String realName = VigenereCipher.encrypt(kakaoUserInfo.getName());
+                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address, realName);
             }
             userRepository.save(kakaoUser);
         }

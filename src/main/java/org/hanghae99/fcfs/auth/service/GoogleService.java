@@ -34,11 +34,12 @@ public class GoogleService {
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+
     @Value("${google.client.id}")
     private String googleClientId;
+
     @Value("${google.secret.id}")
     private String googleSecretId;
-
 
     public String googleLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -61,7 +62,6 @@ public class GoogleService {
 
         return createToken;
     }
-
 
     // 애플리케이션은 인증 코드로 구글 서버에 토큰을 요청하고, 토큰을 전달 받습니다.
     // 1) 액세스 토큰 요청 메서드
@@ -127,9 +127,10 @@ public class GoogleService {
         String id = jsonNode.get("id").asText();
         String username = jsonNode.get("email").asText();
         String email = jsonNode.get("email").asText();
+        String name = jsonNode.get("name").asText();
         String social = "GOOGLE";
 
-        return new SocialUserInfoDto(id, username, email, social);
+        return new SocialUserInfoDto(id, username, email, social, name);
     }
 
     // 3) 구글 ID 정보로 회원가입
@@ -158,7 +159,8 @@ public class GoogleService {
                 String email = VigenereCipher.encrypt(googleUserInfoDto.getEmail());
                 String phone = VigenereCipher.encrypt("need_update");
                 String address = VigenereCipher.encrypt("need_update");
-                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address);
+                String realName = VigenereCipher.encrypt(googleUserInfoDto.getName());
+                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address, realName);
             }
             userRepository.save(googleUser);
         }

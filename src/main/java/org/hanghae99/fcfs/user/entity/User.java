@@ -71,11 +71,12 @@ public class User extends TimeStamped {
     }
 
     //소셜 회원가입 생성자
-    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social, String phone, String address) {
+    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social, String phone, String address, String realName) {
         this.username = username;
         this.password = password;
         this.address = address;
         this.phone = phone;
+        this.realName = realName;
         this.socialId = socialId;
         this.social = social;
         this.email = email;
