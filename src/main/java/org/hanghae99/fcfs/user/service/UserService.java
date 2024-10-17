@@ -76,7 +76,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
     }
 
-    public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -95,7 +95,7 @@ public class UserService {
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
 
-    public void logout(HttpServletResponse response, Authentication authResult, User user) throws ServletException, IOException {
+    public void logout(HttpServletResponse response, Authentication authResult, User user) {
         String username = user.getUsername();
         jwtUtil.deleteCookie(response, authResult);
         redisRefreshTokenRepository.deleteRefreshToken(username);

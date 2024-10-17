@@ -49,7 +49,7 @@ public class UserController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response, BindingResult bindingResult) {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(!fieldErrors.isEmpty()) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -57,12 +57,12 @@ public class UserController {
             }
             throw new IllegalArgumentException("잘못된 ID 또는 비밀번호입니다.");
         }
-        return userService.login(loginRequestDto, request, response);
+        return userService.login(loginRequestDto, response);
     }
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDto> logout(HttpServletResponse response, Authentication authResult, @AuthenticationPrincipal UserDetailsImpl userDetails) throws ServletException, IOException {
+    public ResponseEntity<ApiResponseDto> logout(HttpServletResponse response, Authentication authResult, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.logout(response, authResult, userDetails.getUser()) ;
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }

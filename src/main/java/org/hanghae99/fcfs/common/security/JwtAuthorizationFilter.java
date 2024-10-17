@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+
+import static org.hanghae99.fcfs.common.security.JwtUtil.AUTHORIZATION_HEADER;
 
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -85,8 +90,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }else {
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
                 String username = info.getSubject();
-                Optional<String> validRefreshToken = redisRefreshTokenRepository.findValidRefreshTokenByUsername(username);
 
+                Optional<String> validRefreshToken = redisRefreshTokenRepository.findValidRefreshTokenByUsername(username);
                 if (validRefreshToken.isPresent()) {
                     try {
                         setAuthentication(info.getSubject());
@@ -94,6 +99,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         return;
                     }
                 } else {
+                    String curToken = jwtUtil.getTokenFromRequest(req);
+                    curToken = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+                    Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+                    cookie.setPath("/");
+                    cookie.setMaxAge(0);
+                    res.addCookie(cookie);
+
                     jwtExceptionHandler(res, "리프레시 토큰이 만료되었거나 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
                     return;
                 }
