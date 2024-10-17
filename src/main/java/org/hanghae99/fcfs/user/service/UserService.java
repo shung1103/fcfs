@@ -55,7 +55,7 @@ public class UserService {
         } else if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         } else {
-            sendMail(requestDto.getEmail());
+//            sendMail(requestDto.getEmail());
         }
 
         // 사용자 ROLE 확인
