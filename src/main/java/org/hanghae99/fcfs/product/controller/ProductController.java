@@ -16,32 +16,32 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/product")
 public class ProductController {
     private final ProductService productService;
 
     @Transactional
     @Operation(summary = "상품 생성", description = "관리자 제한")
     @Secured("ROLE_ADMIN")
-    @PostMapping("/product")
+    @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productRequestDto));
     }
 
     @Operation(summary = "전체 상품 목록 조회", description = "로그인 없이도 이용할 수 있습니다.")
-    @GetMapping("/products")
+    @GetMapping("/list")
     public ResponseEntity<List<ProductResponseDto>> getProducts() {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProducts());
     }
 
     @Operation(summary = "상품 상세 조회")
-    @GetMapping("/product/{productNo}")
+    @GetMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long productNo) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productNo));
     }
 
     @Operation(summary = "상품 재고 확인")
-    @GetMapping("/product/{productNo}/stock")
+    @GetMapping("/{productNo}/stock")
     public Long getProductStock(@PathVariable Long productNo) {
         return productService.getProductStock(productNo);
     }
@@ -49,7 +49,7 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 정보 수정", description = "관리자 제한")
     @Secured("ROLE_ADMIN")
-    @PutMapping("/product/{productNo}")
+    @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long productNo, @RequestBody ProductRequestDto productRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productNo, productRequestDto));
     }
@@ -57,7 +57,7 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 삭제", description = "관리자 제한")
     @Secured("ROLE_ADMIN")
-    @DeleteMapping("/product/{productNo}")
+    @DeleteMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> deleteProduct(@PathVariable Long productNo) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productNo));
     }

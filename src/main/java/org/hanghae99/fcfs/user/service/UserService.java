@@ -104,8 +104,7 @@ public class UserService {
         redisRefreshTokenRepository.deleteRefreshToken(username);
     }
 
-    public UserResponseDto getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 유저 번호입니다."));
+    public UserResponseDto getUser(User user) {
         String email = VigenereCipher.decrypt(user.getEmail(), vigenereCipher.key);
         String realName = VigenereCipher.decrypt(user.getRealName(), vigenereCipher.key);
         String address = VigenereCipher.decrypt(user.getAddress(), vigenereCipher.key);

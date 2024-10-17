@@ -61,9 +61,9 @@ public class UserController {
     }
 
     @Operation(summary = "유저 정보 조회")
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails.getUser()));
     }
 
     @Operation(summary = "프로필 수정")
