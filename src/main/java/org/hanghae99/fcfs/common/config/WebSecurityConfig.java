@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
 @RequiredArgsConstructor
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final JwtUtil jwtUtil;
@@ -65,14 +65,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/api/user/info/password","/user/info/password").permitAll()
-                        .requestMatchers("/api/user/info/username","/user/info/username").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/product").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
-                        .requestMatchers("/", "/login","/signup","/api/mail","/api/auth/**").permitAll()
+//                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+//                        .requestMatchers("/api/user/info/password","/user/info/password").permitAll()
+//                        .requestMatchers("/api/user/info/username","/user/info/username").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+//                        .requestMatchers(HttpMethod.PUT, "/api/product").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
+                        .requestMatchers("/**").permitAll()
 
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
