@@ -58,11 +58,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             //토큰 만료되었는지 여부 판별
             if (!jwtUtil.validateToken(tokenValue)) {
                 // accessToken 만료되었으나 refreshToken 존재 여부 판별해본다.
-            log.info("토큰 만료");
                 //토큰을 분해해서 Claim객체를 리턴받아온다. 그 안에 sub필드는 username 정보를 담고있음.
                 Claims userInfo = jwtUtil.getUserInfoFromToken(tokenValue);
                 String username = userInfo.getSubject();
-                log.info("username : "+ username);
                 if (username != null) {
                     Optional<String> validRefreshToken = redisRefreshTokenRepository.findValidRefreshTokenByUsername(username);
 
@@ -101,16 +99,22 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 }
             }else {
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+                String username = info.getSubject();
+                Optional<String> validRefreshToken = redisRefreshTokenRepository.findValidRefreshTokenByUsername(username);
 
-                try {
-                    setAuthentication(info.getSubject());
-                } catch (Exception e) {
-                    log.error(e.getMessage());
+                if (validRefreshToken.isPresent()) {
+                    try {
+                        setAuthentication(info.getSubject());
+                    } catch (Exception e) {
+                        log.error(e.getMessage());
+                        return;
+                    }
+                } else {
+                    jwtExceptionHandler(res, "리프레시 토큰이 만료되었거나 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
                     return;
                 }
             }
         }
-
         filterChain.doFilter(req, res);
     }
 

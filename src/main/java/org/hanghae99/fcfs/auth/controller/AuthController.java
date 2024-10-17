@@ -49,7 +49,6 @@ public class AuthController {
 
         String token = googleService.googleLogin(code);
         jwtUtil.addJwtToCookie(token, response);
-
         return new RedirectView("/");
     }
 }

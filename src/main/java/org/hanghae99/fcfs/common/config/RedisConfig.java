@@ -45,14 +45,6 @@ public class RedisConfig {
 
     }
 
-    /* redis pub/sub 메시지를 처리하는 listener 설정 */
-    @Bean
-    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        return container;
-    }
-
     /* 어플리케이션에서 사용할 redisTemplate 설정 */
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
@@ -73,11 +65,11 @@ public class RedisConfig {
     // Redis Cache
     @Bean
     public CacheManager productCacheManager(RedisConnectionFactory cf) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) // Value Serializer 변경
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) // Value Serializer 변경
                 .disableCachingNullValues()
-                .entryTtl(Duration.ofMinutes(3L)); // 캐시 수명 30분
+                .entryTtl(Duration.ofMinutes(3L)); // 캐시 수명 3분
 
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
         redisCacheConfigurationMap

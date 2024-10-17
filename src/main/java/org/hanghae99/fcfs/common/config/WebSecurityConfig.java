@@ -84,13 +84,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 //                })
 //        );
 
-        // 접근 불가 페이지
-        /*http.exceptionHandling((exceptionHandling) ->
-                exceptionHandling
-                        // "접근 불가" 페이지 URL 설정
-                        .accessDeniedPage("/forbidden.html")
-        );*/
-
         return http.build();
     }
 }
