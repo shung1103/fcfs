@@ -46,14 +46,7 @@ public class UserService {
     private String ADMIN_TOKEN;
 
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        String username = requestDto.getUsername();
-        String password = passwordEncoder.encode(requestDto.getPassword());
-        String realName = aes128.encryptAes(requestDto.getRealName());
-        String address = aes128.encryptAes(requestDto.getAddress());
-        String phone = aes128.encryptAes(requestDto.getPhone());
-        String email = aes128.encryptAes(requestDto.getEmail());
-
-        if (userRepository.existsByUsername(username)) {
+        if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
         } else if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
@@ -69,6 +62,13 @@ public class UserService {
             }
             role = UserRoleEnum.ADMIN;
         }
+
+        String username = requestDto.getUsername();
+        String password = passwordEncoder.encode(requestDto.getPassword());
+        String realName = aes128.encryptAes(requestDto.getRealName());
+        String address = aes128.encryptAes(requestDto.getAddress());
+        String phone = aes128.encryptAes(requestDto.getPhone());
+        String email = aes128.encryptAes(requestDto.getEmail());
 
         User user = new User(username, password, realName, address, phone, email, role);
         userRepository.save(user);

@@ -19,6 +19,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
+        if (productRepository.existsByTitle(productRequestDto.getTitle())) throw new IllegalArgumentException("중복된 상품명이 존재합니다.");
         Product product = new Product(productRequestDto);
         productRepository.save(product);
         return new ProductResponseDto(product);
