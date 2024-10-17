@@ -3,15 +3,13 @@ package org.hanghae99.fcfs.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.fcfs.common.entity.TimeStamped;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.user.dto.UserRequestDto;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "users")
-public class User extends TimeStamped {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
