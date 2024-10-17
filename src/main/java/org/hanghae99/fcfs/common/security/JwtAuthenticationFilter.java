@@ -54,10 +54,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
-
         //스웨거는 헤더에 토큰이있어야한다.
-        response.addHeader("Authorization",token);
-
+//        response.addHeader("Authorization",token);
         redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
         redisRefreshTokenRepository.generateRefreshToken(username);
     }

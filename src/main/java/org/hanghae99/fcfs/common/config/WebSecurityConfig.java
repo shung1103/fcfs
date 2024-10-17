@@ -33,7 +33,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserService userService;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
-    //private final TokenLogoutHandler tokenLogoutHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

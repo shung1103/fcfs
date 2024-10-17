@@ -1,6 +1,7 @@
 package org.hanghae99.fcfs.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.List;
@@ -59,8 +62,8 @@ public class UserController {
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.logout(userDetails.getUser()) ;
+    public ResponseEntity<ApiResponseDto> logout(HttpServletResponse response, Authentication authResult, @AuthenticationPrincipal UserDetailsImpl userDetails) throws ServletException, IOException {
+        userService.logout(response, authResult, userDetails.getUser()) ;
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 

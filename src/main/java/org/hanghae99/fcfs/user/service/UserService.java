@@ -2,6 +2,7 @@ package org.hanghae99.fcfs.user.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
@@ -78,18 +81,13 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
-
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
         UserRoleEnum role = user.getRole();
-
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
-
-        //스웨거는 헤더에 토큰이있어야한다.
-        response.addHeader("Authorization",token);
 
         redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
         redisRefreshTokenRepository.generateRefreshToken(username);
@@ -97,8 +95,9 @@ public class UserService {
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
 
-    public void logout(User user) {
+    public void logout(HttpServletResponse response, Authentication authResult, User user) throws ServletException, IOException {
         String username = user.getUsername();
+        jwtUtil.deleteCookie(response, authResult);
         redisRefreshTokenRepository.deleteRefreshToken(username);
     }
 
