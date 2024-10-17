@@ -6,16 +6,18 @@ import org.hanghae99.fcfs.product.entity.Product;
 @Getter
 public class ProductResponseDto {
     private Long id;
-    private String productName;
-    private Long productPrice;
-    private String productIntro;
-    private Long productQuantity;
+    private String category;
+    private String title;
+    private Long price;
+    private String intro;
+    private Long stock;
 
     public ProductResponseDto(Product product) {
         this.id = product.getId();
-        this.productName = product.getProductName();
-        this.productPrice = product.getProductPrice();
-        this.productIntro = product.getProductIntro();
-        this.productQuantity = product.getProductQuantity();
+        this.category = product.getCategory();
+        this.title = product.getTitle();
+        this.price = product.getPrice();
+        this.intro = product.getIntro();
+        this.stock = product.getStock();
     }
 }

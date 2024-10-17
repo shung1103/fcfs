@@ -15,29 +15,34 @@ public class Product {
     @Column(name = "product_id")
     private Long id;
 
-    @Column(name = "product_name", nullable = false, unique = true)
-    private String productName;
+    @Column(name = "category", nullable = false)
+    private String category;
 
-    @Column(name = "product_price", nullable = false)
-    private Long productPrice;
+    @Column(name = "title", nullable = false, unique = true)
+    private String title;
 
-    @Column(name = "product_intro", nullable = false)
-    private String productIntro;
+    @Column(name = "price", nullable = false)
+    private Long price;
 
-    @Column(name = "product_quantity", nullable = false)
-    private Long productQuantity;
+    @Column(name = "intro", nullable = false)
+    private String intro;
+
+    @Column(name = "stock", nullable = false)
+    private Long stock;
 
     public Product(ProductRequestDto productRequestDto) {
-        this.productName = productRequestDto.getProductName();
-        this.productPrice = productRequestDto.getProductPrice();
-        this.productIntro = productRequestDto.getProductIntro();
-        this.productQuantity = productRequestDto.getProductQuantity();
+        this.category = productRequestDto.getCategory();
+        this.title = productRequestDto.getTitle();
+        this.price = productRequestDto.getPrice();
+        this.intro = productRequestDto.getIntro();
+        this.stock = productRequestDto.getStock();
     }
 
     public void update(ProductRequestDto productRequestDto) {
-        this.productName = productRequestDto.getProductName();
-        this.productPrice = productRequestDto.getProductPrice();
-        this.productIntro = productRequestDto.getProductIntro();
-        this.productQuantity = productRequestDto.getProductQuantity();
+        this.category = productRequestDto.getCategory();
+        this.title = productRequestDto.getTitle();
+        this.price = productRequestDto.getPrice();
+        this.intro = productRequestDto.getIntro();
+        this.stock = productRequestDto.getStock();
     }
 }

@@ -6,6 +6,7 @@ import org.hanghae99.fcfs.product.dto.ProductRequestDto;
 import org.hanghae99.fcfs.product.dto.ProductResponseDto;
 import org.hanghae99.fcfs.product.entity.Product;
 import org.hanghae99.fcfs.product.repository.ProductRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Cacheable(value = "Products", cacheManager = "productCacheManager")
     public List<ProductResponseDto> getProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
@@ -33,6 +35,12 @@ public class ProductService {
     public ProductResponseDto getProduct(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         return new ProductResponseDto(product);
+    }
+
+    @Cacheable(value = "Products", key = "#productNo", cacheManager = "productCacheManager")
+    public Long getProductStock(Long productNo) {
+        Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        return product.getStock();
     }
 
     public ProductResponseDto updateProduct(Long productNo, ProductRequestDto productRequestDto) {

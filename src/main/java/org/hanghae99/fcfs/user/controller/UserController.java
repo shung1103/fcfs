@@ -1,5 +1,6 @@
 package org.hanghae99.fcfs.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "회원 가입")
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult) {
         // Validation 예외처리
@@ -39,22 +41,26 @@ public class UserController {
         return userService.signup(signupRequestDto);
     }
 
+    @Operation(summary = "로그 아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.logout(userDetails.getUser()) ;
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 
+    @Operation(summary = "유저 정보 조회")
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
     }
 
+    @Operation(summary = "프로필 수정")
     @PutMapping("/update-profile")
     public ResponseEntity<UserResponseDto> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser(), userRequestDto));
     }
 
+    @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그 아웃")
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto) {
         return userService.updatePassword(userDetails.getUser(), passwordRequestDto);

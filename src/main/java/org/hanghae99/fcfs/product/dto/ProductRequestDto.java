@@ -6,14 +6,17 @@ import lombok.Getter;
 @Getter
 public class ProductRequestDto {
     @NotBlank
-    private String productName;
+    private String category;
 
     @NotBlank
-    private Long productPrice;
+    private String title;
 
     @NotBlank
-    private String productIntro;
+    private Long price;
 
     @NotBlank
-    private Long productQuantity;
+    private String intro;
+
+    @NotBlank
+    private Long stock;
 }
