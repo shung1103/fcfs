@@ -24,16 +24,18 @@ public class WishListService {
     private final WishListItemRepository wishListItemRepository;
     private final ProductRepository productRepository;
 
-    public void createWishList(User user) {
+    public WishList createWishList(User user) {
         if (!wishListRepository.existsById(user.getId())) {
             WishList wishList = new WishList(user);
             wishListRepository.save(wishList);
+            return wishList;
+        } else {
+            return wishListRepository.findByUser(user);
         }
     }
 
     public ResponseEntity<WishListResponseDto> getWishListItems(User user) {
-        createWishList(user);
-        WishList wishList = wishListRepository.findById(user.getId()).orElse(null);
+        WishList wishList = createWishList(user);
         List<WishListItem> wishListItemList = wishList.getWishListItemList();
 
         long totalPrice = 0L;
@@ -43,9 +45,8 @@ public class WishListService {
     }
 
     public ResponseEntity<ApiResponseDto> takeItem(Long productNo, WishListItemRequestDto wishListItemRequestDto, User user) {
-        createWishList(user);
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
-        WishList wishList = wishListRepository.findById(user.getId()).orElse(null);
+        WishList wishList = createWishList(user);
 
         if (wishListItemRepository.existsByWishListIdAndProductId(wishList.getId(), product.getId())) {
             WishListItem wishListItem = wishListItemRepository.findByWishListIdAndProductId(wishList.getId(), product.getId());

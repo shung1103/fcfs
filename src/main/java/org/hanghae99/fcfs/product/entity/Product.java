@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.product.dto.ProductRequestDto;
+import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
 
 @Entity
 @Getter
@@ -44,5 +45,9 @@ public class Product {
         this.price = productRequestDto.getPrice();
         this.intro = productRequestDto.getIntro();
         this.stock = productRequestDto.getStock();
+    }
+
+    public void reStock(Long reStockQuantity) {
+        this.stock += reStockQuantity;
     }
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.product.dto.ProductRequestDto;
 import org.hanghae99.fcfs.product.dto.ProductResponseDto;
+import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
 import org.hanghae99.fcfs.product.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,12 @@ public class ProductController {
     @GetMapping("/{productNo}/stock")
     public Long getProductStock(@PathVariable Long productNo) {
         return productService.getProductStock(productNo);
+    }
+
+    @Operation(summary = "상품 재입고")
+    @PutMapping("/{productNo}/re-stock")
+    public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.reStockProduct(productNo, reStockRequestDto));
     }
 
     @Transactional

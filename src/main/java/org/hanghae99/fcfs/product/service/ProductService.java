@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.product.dto.ProductRequestDto;
 import org.hanghae99.fcfs.product.dto.ProductResponseDto;
+import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
 import org.hanghae99.fcfs.product.entity.Product;
 import org.hanghae99.fcfs.product.repository.ProductRepository;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,6 +43,13 @@ public class ProductService {
     public Long getProductStock(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         return product.getStock();
+    }
+
+    public ProductResponseDto reStockProduct(Long productNo, ReStockRequestDto reStockRequestDto) {
+        Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        product.reStock(reStockRequestDto.getReStockQuantity());
+        productRepository.save(product);
+        return new ProductResponseDto(product);
     }
 
     public ProductResponseDto updateProduct(Long productNo, ProductRequestDto productRequestDto) {
