@@ -13,13 +13,14 @@ import org.hanghae99.fcfs.wishList.entity.WishListItem;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_item_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    @Column(name = "order_item_quantity", nullable = false)
+    private Integer orderItemQuantity;
 
-    @Column
-    private Boolean scoreComplete;
+    @Column(name = "mark_complete")
+    private Boolean markComplete;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -30,8 +31,8 @@ public class OrderItem {
     private Product product;
 
     public OrderItem(WishListItem wishListItem, Order order) {
-        this.quantity = wishListItem.getQuantity();
-        this.scoreComplete = false;
+        this.orderItemQuantity = wishListItem.getWishListItemQuantity();
+        this.markComplete = false;
         this.order = order;
         this.product = wishListItem.getProduct();
     }

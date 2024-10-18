@@ -39,7 +39,7 @@ public class WishListService {
         List<WishListItem> wishListItemList = wishList.getWishListItemList();
 
         long totalPrice = 0L;
-        for (WishListItem wishListItem : wishListItemList) totalPrice += wishListItem.getProduct().getPrice() * wishListItem.getQuantity();
+        for (WishListItem wishListItem : wishListItemList) totalPrice += wishListItem.getProduct().getPrice() * wishListItem.getWishListItemQuantity();
 
         return ResponseEntity.status(HttpStatus.OK).body(new WishListResponseDto(user.getUsername(), wishList, totalPrice));
     }
@@ -50,7 +50,7 @@ public class WishListService {
 
         if (wishListItemRepository.existsByWishListIdAndProductId(wishList.getId(), product.getId())) {
             WishListItem wishListItem = wishListItemRepository.findByWishListIdAndProductId(wishList.getId(), product.getId());
-            wishListItem.updateQuantity(wishListItem.getQuantity() + wishListItemRequestDto.getQuantity());
+            wishListItem.updateQuantity(wishListItem.getWishListItemQuantity() + wishListItemRequestDto.getQuantity());
             wishListItemRepository.save(wishListItem);
         } else {
             WishListItem wishListItem = new WishListItem(wishListItemRequestDto.getQuantity(), wishList, product);

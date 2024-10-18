@@ -37,20 +37,20 @@ public class OrderService {
         if (wishList.getWishListItemList().isEmpty()) throw new NullPointerException("위시 리스트에 상품이 없습니다.");
 
         long totalPrice = 0L;
-        for (WishListItem wishListItem : wishList.getWishListItemList()) totalPrice += wishListItem.getProduct().getPrice() * wishListItem.getQuantity();
+        for (WishListItem wishListItem : wishList.getWishListItemList()) totalPrice += wishListItem.getProduct().getPrice() * wishListItem.getWishListItemQuantity();
 
         if (orderRequestDto.getPayment().equals(totalPrice)) {
             Order order = new Order(user, totalPrice, orderRequestDto);
             orderRepository.save(order);
 
             for (WishListItem wishListItem : wishList.getWishListItemList()) {
-                if (wishListItem.getProduct().getStock() < wishListItem.getQuantity()) {
+                if (wishListItem.getProduct().getStock() < wishListItem.getWishListItemQuantity()) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                             new ApiResponseDto(wishListItem.getProduct().getTitle() + "의 재고가 부족합니다.", HttpStatus.BAD_REQUEST.value()));
                 }
                 OrderItem orderItem = new OrderItem(wishListItem, order);
                 Product product = wishListItem.getProduct();
-                product.reStock(wishListItem.getQuantity() * (-1L));
+                product.reStock(wishListItem.getWishListItemQuantity() * (-1L));
 
                 orderItemRepository.save(orderItem);
                 wishListItemRepository.delete(wishListItem);
@@ -121,7 +121,7 @@ public class OrderService {
                     if (Duration.between(order.getModifiedAt(), LocalDateTime.now()).toDays() == 1) {
                         order.updateOrderStatus("반품 완료");
                         List<OrderItem> orderItemList = order.getOrderItemList();
-                        for (OrderItem orderItem : orderItemList) orderItem.getProduct().reStock((long) orderItem.getQuantity());
+                        for (OrderItem orderItem : orderItemList) orderItem.getProduct().reStock((long) orderItem.getOrderItemQuantity());
                     }
                 default:
                     throw new RuntimeException();

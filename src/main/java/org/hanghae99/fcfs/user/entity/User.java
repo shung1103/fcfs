@@ -20,35 +20,35 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "real_name", nullable = false)
     private String realName;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(nullable = true)
+    @Column(name = "social_id", nullable = true)
     private String socialId;
 
-    @Column(nullable = true)
+    @Column(name = "social", nullable = true)
     private String social;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(nullable = false)
+    @Column(name = "password_change_count", nullable = false)
     private Integer passwordChangeCount;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
@@ -58,7 +58,7 @@ public class User {
     private List<Order> orderList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<LikeMark> likemarkList;
+    private List<LikeMark> likeMarkList;
 
     //회원가입 생성자
     public User(String username, String password, String realName, String address, String phone, String email, UserRoleEnum role) {

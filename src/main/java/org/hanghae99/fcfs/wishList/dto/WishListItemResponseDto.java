@@ -16,6 +16,6 @@ public class WishListItemResponseDto {
         this.productId = wishListItem.getProduct().getId();
         this.title = wishListItem.getProduct().getTitle();
         this.price = wishListItem.getProduct().getPrice().toString();
-        this.quantity = wishListItem.getQuantity();
+        this.quantity = wishListItem.getWishListItemQuantity();
     }
 }

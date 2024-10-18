@@ -34,7 +34,7 @@ public class Product {
     private Long stock;
 
     @OneToMany(mappedBy = "product")
-    private List<LikeMark> likemarkList;
+    private List<LikeMark> likeMarkList;
 
     public Product(ProductRequestDto productRequestDto) {
         this.category = productRequestDto.getCategory();

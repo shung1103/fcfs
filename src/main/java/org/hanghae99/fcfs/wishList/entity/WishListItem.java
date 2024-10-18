@@ -12,10 +12,11 @@ import org.hanghae99.fcfs.product.entity.Product;
 public class WishListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "wish_list_item_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    @Column(name = "wish_list_item_quantity", nullable = false)
+    private Integer wishListItemQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wish_list_id")
@@ -26,10 +27,10 @@ public class WishListItem {
     private Product product;
 
     public WishListItem(Integer quantity, WishList wishList, Product product) {
-        this.quantity = quantity;
+        this.wishListItemQuantity = quantity;
         this.wishList = wishList;
         this.product = product;
     }
 
-    public void updateQuantity(Integer quantity) { this.quantity = quantity; }
+    public void updateQuantity(Integer quantity) { this.wishListItemQuantity = quantity; }
 }

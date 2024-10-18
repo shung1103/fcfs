@@ -17,6 +17,7 @@ import java.util.List;
 public class Order extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
     private Long id;
 
     @Column(name = "total_price", nullable = false)
