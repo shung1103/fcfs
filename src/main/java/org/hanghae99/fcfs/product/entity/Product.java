@@ -3,7 +3,10 @@ package org.hanghae99.fcfs.product.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hanghae99.fcfs.likemark.entity.LikeMark;
 import org.hanghae99.fcfs.product.dto.ProductRequestDto;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +32,9 @@ public class Product {
 
     @Column(name = "stock", nullable = false)
     private Long stock;
+
+    @OneToMany(mappedBy = "product")
+    private List<LikeMark> likemarkList;
 
     public Product(ProductRequestDto productRequestDto) {
         this.category = productRequestDto.getCategory();

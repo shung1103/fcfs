@@ -7,7 +7,6 @@ import org.hanghae99.fcfs.common.entity.TimeStamped;
 import org.hanghae99.fcfs.order.dto.OrderRequestDto;
 import org.hanghae99.fcfs.user.entity.User;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
