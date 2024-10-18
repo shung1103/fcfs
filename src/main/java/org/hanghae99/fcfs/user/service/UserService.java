@@ -2,8 +2,6 @@ package org.hanghae99.fcfs.user.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
@@ -14,6 +12,7 @@ import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
+import org.hanghae99.fcfs.wishList.service.WishListService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
@@ -32,6 +30,7 @@ import java.security.InvalidKeyException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final WishListService wishListService;
     private final PasswordEncoder passwordEncoder;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JavaMailSender javaMailSender;
@@ -72,6 +71,7 @@ public class UserService {
 
         User user = new User(username, password, realName, address, phone, email, role);
         userRepository.save(user);
+        wishListService.createWishList(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
     }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.wishList.entity.WishList;
 
 @Entity
 @Getter
@@ -45,6 +46,9 @@ public class User {
 
     @Column(nullable = false)
     private Integer passwordChangeCount;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private WishList wishList;
 
     //회원가입 생성자
     public User(String username, String password, String realName, String address, String phone, String email, UserRoleEnum role) {
