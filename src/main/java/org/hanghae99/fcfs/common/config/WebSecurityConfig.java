@@ -74,14 +74,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 //        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
 //        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // 인증되지 않은 사용자가 localhost:8080에 접근했을 때 로그인 페이지로 리디렉션되도록 설정
-        //사용시 Authorization필터를 계속 거치는 문제 발생
-//        http.exceptionHandling((exceptionHandling) ->
-//                exceptionHandling.authenticationEntryPoint((request, response, authException) -> {
-//                    response.sendRedirect("/main/login");
-//                })
-//        );
-
         return http.build();
     }
 }
