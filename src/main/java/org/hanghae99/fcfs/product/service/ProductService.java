@@ -7,6 +7,7 @@ import org.hanghae99.fcfs.product.dto.ProductResponseDto;
 import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
 import org.hanghae99.fcfs.product.entity.Product;
 import org.hanghae99.fcfs.product.repository.ProductRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
         if (productRepository.existsByTitle(productRequestDto.getTitle())) throw new IllegalArgumentException("중복된 상품명이 존재합니다.");
         Product product = new Product(productRequestDto);
@@ -26,7 +28,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-//    @Cacheable(value = "Products", cacheManager = "productCacheManager")
+    @Cacheable(value = "Products", cacheManager = "productCacheManager")
     public List<ProductResponseDto> getProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
@@ -39,12 +41,13 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-//    @Cacheable(value = "Products", key = "#productNo", cacheManager = "productCacheManager")
+    @Cacheable(value = "Products", key = "#productNo", cacheManager = "productCacheManager")
     public Long getProductStock(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         return product.getStock();
     }
 
+    @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto reStockProduct(Long productNo, ReStockRequestDto reStockRequestDto) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         product.reStock(reStockRequestDto.getReStockQuantity());
@@ -52,6 +55,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto updateProduct(Long productNo, ProductRequestDto productRequestDto) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         product.update(productRequestDto);
@@ -59,6 +63,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ApiResponseDto deleteProduct(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         productRepository.delete(product);

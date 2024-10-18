@@ -72,8 +72,7 @@ public class RedisConfig {
                 .entryTtl(Duration.ofMinutes(3L)); // 캐시 수명 3분
 
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
-        redisCacheConfigurationMap
-                .put("Products", redisCacheConfiguration.entryTtl(Duration.ofMinutes(5)));
+        redisCacheConfigurationMap.put("Products", redisCacheConfiguration.entryTtl(Duration.ofMinutes(5)));
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf)
                 .withInitialCacheConfigurations(redisCacheConfigurationMap)
