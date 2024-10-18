@@ -2,7 +2,12 @@ package org.hanghae99.fcfs.user.dto;
 
 import lombok.Getter;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.order.dto.OrderResponseDto;
 import org.hanghae99.fcfs.user.entity.User;
+import org.hanghae99.fcfs.wishList.entity.WishList;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class UserResponseDto {
@@ -12,6 +17,9 @@ public class UserResponseDto {
     private String address;
     private String phone;
     private UserRoleEnum role;
+    private WishList wishList;
+    private List<OrderResponseDto> orderList;
+    private String social;
 
     public UserResponseDto(User user, String email, String realName, String address, String phone) {
         this.username = user.getUsername();
@@ -20,6 +28,9 @@ public class UserResponseDto {
         this.address = address;
         this.phone = phone;
         this.role = user.getRole();
+        this.wishList = user.getWishList();
+        this.orderList = user.getOrderList().stream().map(OrderResponseDto::new).collect(Collectors.toList());
+        this.social = user.getSocial();
     }
 
     public UserResponseDto(User user) {
@@ -29,5 +40,6 @@ public class UserResponseDto {
         this.address = user.getAddress();
         this.phone = user.getPhone();
         this.role = user.getRole();
+        this.social = user.getSocial();
     }
 }
