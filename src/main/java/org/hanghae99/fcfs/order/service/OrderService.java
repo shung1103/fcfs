@@ -50,7 +50,7 @@ public class OrderService {
                 }
                 OrderItem orderItem = new OrderItem(wishListItem, order);
                 Product product = wishListItem.getProduct();
-                product.reStock(wishListItem.getWishListItemQuantity() * (-1L));
+                product.reStock(wishListItem.getWishListItemQuantity() * (-1));
 
                 orderItemRepository.save(orderItem);
                 wishListItemRepository.delete(wishListItem);
@@ -121,7 +121,7 @@ public class OrderService {
                     if (Duration.between(order.getModifiedAt(), LocalDateTime.now()).toDays() == 1) {
                         order.updateOrderStatus("반품 완료");
                         List<OrderItem> orderItemList = order.getOrderItemList();
-                        for (OrderItem orderItem : orderItemList) orderItem.getProduct().reStock((long) orderItem.getOrderItemQuantity());
+                        for (OrderItem orderItem : orderItemList) orderItem.getProduct().reStock(orderItem.getOrderItemQuantity());
                     }
                 default:
                     throw new RuntimeException();

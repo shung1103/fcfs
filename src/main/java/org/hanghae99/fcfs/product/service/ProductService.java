@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional
     @Cacheable(value = "Products", cacheManager = "productCacheManager")
     public List<ProductResponseDto> getProducts() {
         List<Product> products = productRepository.findAll();
@@ -41,8 +43,9 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional
     @Cacheable(value = "Products", key = "#productNo", cacheManager = "productCacheManager")
-    public Long getProductStock(Long productNo) {
+    public Integer getProductStock(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         return product.getStock();
     }

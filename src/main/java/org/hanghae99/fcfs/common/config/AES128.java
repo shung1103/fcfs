@@ -43,8 +43,8 @@ public class AES128 {
     // AES 암호화
     public String encryptAes(String plaintext) throws InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
-        byte[] encryted = cipher.doFinal(plaintext.getBytes(ENCODING_TYPE));
-        return new String(Base64.getEncoder().encode(encryted), ENCODING_TYPE);
+        byte[] encrypted = cipher.doFinal(plaintext.getBytes(ENCODING_TYPE));
+        return new String(Base64.getEncoder().encode(encrypted), ENCODING_TYPE);
     }
 
     // AES 복호화

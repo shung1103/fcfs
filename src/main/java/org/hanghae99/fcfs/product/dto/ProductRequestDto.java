@@ -18,5 +18,5 @@ public class ProductRequestDto {
     private String intro;
 
     @NotBlank
-    private Long stock;
+    private Integer stock;
 }

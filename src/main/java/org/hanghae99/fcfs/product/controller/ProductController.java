@@ -43,7 +43,7 @@ public class ProductController {
 
     @Operation(summary = "상품 재고 확인")
     @GetMapping("/{productNo}/stock")
-    public Long getProductStock(@PathVariable Long productNo) {
+    public Integer getProductStock(@PathVariable Long productNo) {
         return productService.getProductStock(productNo);
     }
 

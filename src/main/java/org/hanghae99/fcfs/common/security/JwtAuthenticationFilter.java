@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.hanghae99.fcfs.common.dto.TokenResponse;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.user.dto.LoginRequestDto;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,7 +51,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
         Integer passwordChangeCount = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getPasswordChangeCount();
-        jwtUtil.createTokenByLogin(username, role, secChUaPlatform, passwordChangeCount);
+        TokenResponse token = jwtUtil.createTokenByLogin(username, role, secChUaPlatform, passwordChangeCount);
+        response.addHeader("Authorization", token.getAccessToken());
+        log.info(token.getAccessToken());
     }
 
     @Override

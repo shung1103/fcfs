@@ -31,7 +31,7 @@ public class Product {
     private String intro;
 
     @Column(name = "stock", nullable = false)
-    private Long stock;
+    private Integer stock;
 
     @OneToMany(mappedBy = "product")
     private List<LikeMark> likeMarkList;
@@ -52,7 +52,7 @@ public class Product {
         this.stock = productRequestDto.getStock();
     }
 
-    public void reStock(Long reStockQuantity) {
+    public void reStock(Integer reStockQuantity) {
         this.stock += reStockQuantity;
     }
 }

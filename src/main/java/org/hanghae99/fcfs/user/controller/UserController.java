@@ -31,6 +31,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @Transactional
     @Operation(summary = "회원 가입")
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
@@ -65,6 +66,7 @@ public class UserController {
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 
+    @Transactional
     @Operation(summary = "유저 정보 조회")
     @GetMapping("/profile")
     public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {

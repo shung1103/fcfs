@@ -86,9 +86,6 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform, user.getPasswordChangeCount());
-        response.addHeader("Authorization", token.getAccessToken());
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
 

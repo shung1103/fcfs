@@ -81,7 +81,7 @@ public class JwtUtil {
     }
 
     //AccessToken 재발행 + refreshToken 함께 발행
-    public TokenResponse reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, Integer passwordChangeCount) {
+    public void reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, Integer passwordChangeCount) {
         // 레디스 저장된 리프레쉬토큰값을 가져와서 입력된 reToken 같은지 유무 확인
         if (!redisDao.getRefreshToken(username).equals(reToken)) {
             throw new IllegalArgumentException();
@@ -90,7 +90,6 @@ public class JwtUtil {
         String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
         String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
         redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
-        return new TokenResponse(accessToken, refreshToken);
     }
 
     // 토큰 검증

@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class ReStockRequestDto {
-    private Long reStockQuantity;
+    private Integer reStockQuantity;
 }
