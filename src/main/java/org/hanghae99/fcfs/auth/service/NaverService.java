@@ -138,6 +138,8 @@ public class NaverService {
         String name = jsonNode.get("response").get("name").asText();
         String social = "NAVER";
 
+        if (phone == null) phone = "need_update";
+
         return new SocialUserInfoDto(id, username, email, phone, social, name);
     }
 

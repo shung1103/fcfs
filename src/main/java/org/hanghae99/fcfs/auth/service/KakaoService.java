@@ -138,6 +138,8 @@ public class KakaoService {
         String name = jsonNode.get("kakao_account").get("name").asText();
         String social = "KAKAO";
 
+        if (phone == null) phone = "need_update";
+
         log.info("카카오 사용자 정보: " + id + ", " + email);
 
         return new SocialUserInfoDto(id, username, email, phone, social, name);
