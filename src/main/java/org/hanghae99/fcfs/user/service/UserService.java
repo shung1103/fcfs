@@ -87,8 +87,8 @@ public class UserService {
 
         UserRoleEnum role = user.getRole();
         String token = jwtUtil.createToken(username, role);
-//        jwtUtil.addJwtToCookie(token, response);
-        response.addHeader("Authorization", token);
+        jwtUtil.addJwtToCookie(token, response);
+//        response.addHeader("Authorization", token);
 
         redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
         redisRefreshTokenRepository.generateRefreshToken(username);
