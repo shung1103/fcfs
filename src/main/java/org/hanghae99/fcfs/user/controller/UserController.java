@@ -81,8 +81,8 @@ public class UserController {
 
     @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
-    public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto) {
-        return userService.updatePassword(userDetails.getUser(), passwordRequestDto);
+    public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
+        return userService.updatePassword(userDetails.getUser(), passwordRequestDto, request);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})

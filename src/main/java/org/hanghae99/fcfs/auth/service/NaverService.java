@@ -59,7 +59,7 @@ public class NaverService {
 
         // 4. JWT 토큰 반환
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        return jwtUtil.createTokenByLogin(naverUser.getUsername(), naverUser.getRole(), secChUaPlatform).getAccessToken();
+        return jwtUtil.createTokenByLogin(naverUser.getUsername(), naverUser.getRole(), secChUaPlatform, naverUser.getPasswordChangeCount()).getAccessToken();
     }
 
     private String[] getToken(String code) throws JsonProcessingException {

@@ -56,7 +56,7 @@ public class KakaoService {
 
         // 4. JWT 토큰 반환
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        return jwtUtil.createTokenByLogin(kakaoUser.getUsername(), kakaoUser.getRole(), secChUaPlatform).getAccessToken();
+        return jwtUtil.createTokenByLogin(kakaoUser.getUsername(), kakaoUser.getRole(), secChUaPlatform, kakaoUser.getPasswordChangeCount()).getAccessToken();
     }
 
     // 애플리케이션은 인증 코드로 카카오 서버에 토큰을 요청하고, 토큰을 전달 받습니다.

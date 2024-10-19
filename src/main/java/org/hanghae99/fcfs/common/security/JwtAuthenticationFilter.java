@@ -49,7 +49,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        jwtUtil.createTokenByLogin(username, role, secChUaPlatform);
+        Integer passwordChangeCount = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getPasswordChangeCount();
+        jwtUtil.createTokenByLogin(username, role, secChUaPlatform, passwordChangeCount);
     }
 
     @Override
