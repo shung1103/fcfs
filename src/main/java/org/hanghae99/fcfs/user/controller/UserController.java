@@ -70,7 +70,7 @@ public class UserController {
     @Operation(summary = "유저 정보 조회")
     @GetMapping("/profile")
     public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails.getUser()));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails.getUser().getId()));
     }
 
     @Operation(summary = "프로필 수정")

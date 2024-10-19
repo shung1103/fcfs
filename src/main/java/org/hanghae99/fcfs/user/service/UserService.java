@@ -99,7 +99,8 @@ public class UserService {
         else throw new IllegalArgumentException("이미 로그아웃한 유저입니다.");
     }
 
-    public UserResponseDto getUser(User user) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         String email = aes128.decryptAes(user.getEmail());
         String realName = aes128.decryptAes(user.getRealName());
         String address = aes128.decryptAes(user.getAddress());

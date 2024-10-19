@@ -17,7 +17,6 @@ public class UserResponseDto {
     private String address;
     private String phone;
     private UserRoleEnum role;
-    private WishList wishList;
     private List<OrderResponseDto> orderList;
     private String social;
 
@@ -28,7 +27,6 @@ public class UserResponseDto {
         this.address = address;
         this.phone = phone;
         this.role = user.getRole();
-        this.wishList = user.getWishList();
         this.orderList = user.getOrderList().stream().map(OrderResponseDto::new).collect(Collectors.toList());
         this.social = user.getSocial();
     }
