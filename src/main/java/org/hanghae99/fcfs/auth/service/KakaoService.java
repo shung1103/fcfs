@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
-import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
@@ -39,7 +38,6 @@ public class KakaoService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate; // 수동 등록한 Bean
     private final JwtUtil jwtUtil;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final AES128 aes128;
 
     @Value("${kakao.client.id}")
@@ -56,17 +54,7 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-        String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
-
-
-        // 5.기존의 토큰이 있다면 삭제
-        redisRefreshTokenRepository.findByUsername(kakaoUser.getUsername()).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
-
-        // 6.레디스에 리프레시 토큰 저장
-        String refreshTokenKey = tokens[1] + ":refresh" + kakaoUser.getPasswordChangeCount();
-        redisRefreshTokenRepository.generateRefreshTokenInSocial(refreshTokenKey, kakaoUser.getUsername());
-
-        return createToken;
+        return jwtUtil.createTokenByLogin(kakaoUser.getUsername(), kakaoUser.getRole()).getAccessToken();
     }
 
     // 애플리케이션은 인증 코드로 카카오 서버에 토큰을 요청하고, 토큰을 전달 받습니다.

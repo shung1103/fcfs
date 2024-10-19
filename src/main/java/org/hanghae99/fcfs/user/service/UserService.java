@@ -2,11 +2,13 @@ package org.hanghae99.fcfs.user.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.config.AES128;
+import org.hanghae99.fcfs.common.config.RedisDao;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
+import org.hanghae99.fcfs.common.dto.TokenResponse;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.dto.*;
@@ -17,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final WishListService wishListService;
     private final PasswordEncoder passwordEncoder;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final RedisDao redisDao;
     private final JavaMailSender javaMailSender;
     private final AES128 aes128;
     private final JwtUtil jwtUtil;
@@ -85,21 +86,19 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        UserRoleEnum role = user.getRole();
-        String token = jwtUtil.createToken(username, role);
-//        jwtUtil.addJwtToCookie(token, response);
-        response.addHeader("Authorization", token);
-
-        redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
-        redisRefreshTokenRepository.generateRefreshToken(username);
-
+        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole());
+        response.addHeader("Authorization", token.getAccessToken());
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
 
-    public void logout(HttpServletResponse response, Authentication authResult, User user) {
+    public void logout(HttpServletRequest request, User user) {
         String username = user.getUsername();
-        jwtUtil.deleteCookie(response, authResult);
-        redisRefreshTokenRepository.deleteRefreshToken(username);
+        String accessToken = jwtUtil.resolveToken(request);
+        Long expiration = jwtUtil.getExpiration(accessToken);
+        // 레디스에 accessToken 사용못하도록 등록
+        redisDao.setBlackList(accessToken, "logout", expiration);
+        if (redisDao.hasKey(username)) redisDao.deleteRefreshToken(username);
+        else throw new IllegalArgumentException("이미 로그아웃한 유저입니다.");
     }
 
     public UserResponseDto getUser(User user) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {

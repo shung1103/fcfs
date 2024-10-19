@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.user.dto.LoginRequestDto;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +18,10 @@ import java.io.IOException;
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, RedisRefreshTokenRepository redisRefreshTokenRepository) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
         setFilterProcessesUrl("/api/user/login");
-        this.redisRefreshTokenRepository = redisRefreshTokenRepository;
     }
 
     @Override
@@ -51,13 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공 및 JWT 생성");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-
-        String token = jwtUtil.createToken(username, role);
-        jwtUtil.addJwtToCookie(token, response);
-        //스웨거는 헤더에 토큰이있어야한다.
-//        response.addHeader("Authorization",token);
-        redisRefreshTokenRepository.findByUsername(username).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
-        redisRefreshTokenRepository.generateRefreshToken(username);
+        jwtUtil.createTokenByLogin(username, role);
     }
 
     @Override

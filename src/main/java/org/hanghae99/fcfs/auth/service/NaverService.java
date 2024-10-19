@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
-import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
@@ -38,7 +37,6 @@ public class NaverService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final AES128 aes128;
 
     @Value("${naver.client.id}")
@@ -59,16 +57,7 @@ public class NaverService {
         User naverUser = registerNaverUserIfNeeded(naverUserInfo);
 
         // 4. JWT 토큰 반환
-        String createToken = jwtUtil.createToken(naverUser.getUsername(), naverUser.getRole());
-
-        // 5.기존의 토큰이 있다면 삭제
-        redisRefreshTokenRepository.findByUsername(naverUser.getUsername()).ifPresent(redisRefreshTokenRepository::deleteRefreshToken);
-
-        // 6.리프레시 토큰 저장
-        String refreshTokenKey = tokens[1] + ":refresh" + naverUser.getPasswordChangeCount();
-        String createRefresh = redisRefreshTokenRepository.generateRefreshTokenInSocial(refreshTokenKey, naverUser.getUsername());
-
-        return createToken;
+        return jwtUtil.createTokenByLogin(naverUser.getUsername(), naverUser.getRole()).getAccessToken();
     }
 
     private String[] getToken(String code) throws JsonProcessingException {

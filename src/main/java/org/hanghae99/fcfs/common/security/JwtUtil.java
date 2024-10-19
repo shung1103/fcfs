@@ -3,25 +3,23 @@ package org.hanghae99.fcfs.common.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.hanghae99.fcfs.common.config.RedisDao;
+import org.hanghae99.fcfs.common.dto.TokenResponse;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
     //JWT 데이터
     // Header KEY 값
@@ -31,12 +29,14 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 30 * 1000L; // 30분
+    private final long ACCESS_TOKEN_TIME = 60 * 30 * 1000L; // 30분
+    private static final long REFRESH_TOKEN_TIME = 1000 * 60 * 60 * 24 * 7L;// 7일
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    private final RedisDao redisDao;
 
     // 로그 설정
     public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
@@ -57,28 +57,36 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserRoleEnum role) {
+    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime) {
         Date date = new Date();
-
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
-    // JWT Cookie 에 저장
-    public void addJwtToCookie(String token, HttpServletResponse res) {
-        token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+    // 유저 로그인 후 토큰 발행
+    public TokenResponse createTokenByLogin(String username, UserRoleEnum role) {
+        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME);
+        String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME);
+        redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
+        return new TokenResponse(accessToken, refreshToken);
+    }
 
-        Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
-        cookie.setPath("/");
-
-        // Response 객체에 Cookie 추가
-        res.addCookie(cookie);
+    //AccessToken 재발행 + refreshToken 함께 발행
+    public TokenResponse reissueAtk(String email, UserRoleEnum role, String reToken) {
+        // 레디스 저장된 리프레쉬토큰값을 가져와서 입력된 reToken 같은지 유무 확인
+        if (!redisDao.getRefreshToken(email).equals(reToken)) {
+            throw new IllegalArgumentException();
+        }
+        String accessToken = createToken(email, role, ACCESS_TOKEN_TIME);
+        String refreshToken = createToken(email, role, REFRESH_TOKEN_TIME);
+        redisDao.setRefreshToken(email, refreshToken, REFRESH_TOKEN_TIME);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     // JWT 토큰 substring
@@ -111,38 +119,18 @@ public class JwtUtil {
     public Claims getUserInfoFromToken(String token) throws ExpiredJwtException {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-
-            //이렇게 해도 되는건지. 질문하기
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
-    // HttpServletRequest 에서 Cookie Value : JWT 가져오기
-    public String getTokenFromRequest(HttpServletRequest req) {
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-                    return URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8); // Encode 되어 넘어간 Value 다시 Decode
-                }
-            }
-        }
-        return null;
-    }
 
-    public void deleteCookie(HttpServletResponse response, Authentication authResult) {
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-
-        String token = createToken(username, role);
-
-        token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
-
-        Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        // Response 객체에 Cookie 추가
-        response.addCookie(cookie);
+    // 액셋스 토큰의 만료시간 조회
+    public Long getExpiration(String accessToken){
+        //에세스 토큰 만료시간
+        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody()
+                .getExpiration();
+        //현재시간
+        long now = new Date().getTime();
+        return (expiration.getTime()-now);
     }
 }

@@ -1,12 +1,10 @@
 package org.hanghae99.fcfs.common.config;
 
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.auth.repository.RedisRefreshTokenRepository;
 import org.hanghae99.fcfs.common.security.JwtAuthenticationFilter;
 import org.hanghae99.fcfs.common.security.JwtAuthorizationFilter;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.common.security.UserDetailsServiceImpl;
-import org.hanghae99.fcfs.user.service.UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -31,8 +30,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final UserService userService;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final RedisDao redisDao;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -41,14 +39,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, redisRefreshTokenRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisRefreshTokenRepository, userService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisDao);
     }
 
     @Bean
@@ -75,5 +73,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 //        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
+                .allowedOriginPatterns("*")
+                .exposedHeaders("Authorization");
     }
 }

@@ -32,7 +32,7 @@ public class AuthController {
     public RedirectView naverLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = naverService.naverLogin(code);
-        jwtUtil.addJwtToCookie(token, response);
+        response.addHeader("Authorization", token);
         return new RedirectView("/");
     }
 
@@ -40,7 +40,7 @@ public class AuthController {
     public RedirectView kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = kakaoService.kakaoLogin(code);
-        jwtUtil.addJwtToCookie(token, response);
+        response.addHeader("Authorization", token);
         return new RedirectView("/");
     }
 
@@ -48,7 +48,7 @@ public class AuthController {
     public RedirectView googleLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = googleService.googleLogin(code);
-        jwtUtil.addJwtToCookie(token, response);
+        response.addHeader("Authorization", token);
         return new RedirectView("/");
     }
 }

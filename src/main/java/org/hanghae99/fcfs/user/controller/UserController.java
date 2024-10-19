@@ -62,8 +62,8 @@ public class UserController {
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDto> logout(HttpServletResponse response, Authentication authResult, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.logout(response, authResult, userDetails.getUser()) ;
+    public ResponseEntity<ApiResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request) {
+        userService.logout(request, userDetails.getUser()) ;
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 
