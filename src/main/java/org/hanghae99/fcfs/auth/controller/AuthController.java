@@ -1,6 +1,7 @@
 package org.hanghae99.fcfs.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.auth.service.GoogleService;
@@ -29,25 +30,25 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/naver/login")
-    public RedirectView naverLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public RedirectView naverLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
-        String token = naverService.naverLogin(code);
+        String token = naverService.naverLogin(code, request);
         response.addHeader("Authorization", token);
         return new RedirectView("/");
     }
 
     @GetMapping("/kakao/login")
-    public RedirectView kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public RedirectView kakaoLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
-        String token = kakaoService.kakaoLogin(code);
+        String token = kakaoService.kakaoLogin(code, request);
         response.addHeader("Authorization", token);
         return new RedirectView("/");
     }
 
     @GetMapping("/google/login")
-    public RedirectView googleLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public RedirectView googleLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
-        String token = googleService.googleLogin(code);
+        String token = googleService.googleLogin(code, request);
         response.addHeader("Authorization", token);
         return new RedirectView("/");
     }

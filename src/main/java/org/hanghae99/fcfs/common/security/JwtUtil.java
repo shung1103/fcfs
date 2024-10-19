@@ -36,6 +36,7 @@ public class JwtUtil {
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
     private final RedisDao redisDao;
 
     // 로그 설정
@@ -57,12 +58,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime) {
+    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform) {
         Date date = new Date();
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                        .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
                         .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
@@ -70,21 +72,22 @@ public class JwtUtil {
     }
 
     // 유저 로그인 후 토큰 발행
-    public TokenResponse createTokenByLogin(String username, UserRoleEnum role) {
-        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME);
-        String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME);
+    public TokenResponse createTokenByLogin(String username, UserRoleEnum role, String platform) {
+        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, platform);
+        String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME, platform);
         redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
         return new TokenResponse(accessToken, refreshToken);
     }
 
     //AccessToken 재발행 + refreshToken 함께 발행
-    public TokenResponse reissueAtk(String email, UserRoleEnum role, String reToken) {
+    public TokenResponse reissueAtk(String email, UserRoleEnum role, String reToken, HttpServletRequest request) {
         // 레디스 저장된 리프레쉬토큰값을 가져와서 입력된 reToken 같은지 유무 확인
         if (!redisDao.getRefreshToken(email).equals(reToken)) {
             throw new IllegalArgumentException();
         }
-        String accessToken = createToken(email, role, ACCESS_TOKEN_TIME);
-        String refreshToken = createToken(email, role, REFRESH_TOKEN_TIME);
+        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
+        String accessToken = createToken(email, role, ACCESS_TOKEN_TIME, secChUaPlatform);
+        String refreshToken = createToken(email, role, REFRESH_TOKEN_TIME, secChUaPlatform);
         redisDao.setRefreshToken(email, refreshToken, REFRESH_TOKEN_TIME);
         return new TokenResponse(accessToken, refreshToken);
     }

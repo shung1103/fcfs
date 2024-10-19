@@ -49,7 +49,7 @@ public class UserController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(!fieldErrors.isEmpty()) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -57,7 +57,7 @@ public class UserController {
             }
             throw new IllegalArgumentException("잘못된 ID 또는 비밀번호입니다.");
         }
-        return userService.login(loginRequestDto, response);
+        return userService.login(loginRequestDto, request, response);
     }
 
     @Operation(summary = "로그아웃")

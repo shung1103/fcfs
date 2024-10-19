@@ -3,6 +3,7 @@ package org.hanghae99.fcfs.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
@@ -44,7 +45,7 @@ public class GoogleService {
     @Value("${google.secret.id}")
     private String googleSecretId;
 
-    public String googleLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public String googleLogin(String code, HttpServletRequest request) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
 
@@ -55,7 +56,8 @@ public class GoogleService {
         User googleUser = registerGoogleUserIfNeeded(googleUserInfoDto);
 
         // 4. JWT 토큰 반환
-        return jwtUtil.createTokenByLogin(googleUser.getUsername(), googleUser.getRole()).getAccessToken();
+        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
+        return jwtUtil.createTokenByLogin(googleUser.getUsername(), googleUser.getRole(), secChUaPlatform).getAccessToken();
     }
 
     // 애플리케이션은 인증 코드로 구글 서버에 토큰을 요청하고, 토큰을 전달 받습니다.

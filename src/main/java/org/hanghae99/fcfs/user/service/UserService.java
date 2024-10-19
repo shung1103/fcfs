@@ -77,7 +77,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
     }
 
-    public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -86,7 +86,8 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole());
+        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
+        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform);
         response.addHeader("Authorization", token.getAccessToken());
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }

@@ -3,6 +3,7 @@ package org.hanghae99.fcfs.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
@@ -45,7 +46,7 @@ public class NaverService {
     @Value("${naver.secret.id}")
     private String naverSecretId;
 
-    public String naverLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public String naverLogin(String code, HttpServletRequest request) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 여기까지는 들어옴
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
@@ -57,7 +58,8 @@ public class NaverService {
         User naverUser = registerNaverUserIfNeeded(naverUserInfo);
 
         // 4. JWT 토큰 반환
-        return jwtUtil.createTokenByLogin(naverUser.getUsername(), naverUser.getRole()).getAccessToken();
+        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
+        return jwtUtil.createTokenByLogin(naverUser.getUsername(), naverUser.getRole(), secChUaPlatform).getAccessToken();
     }
 
     private String[] getToken(String code) throws JsonProcessingException {

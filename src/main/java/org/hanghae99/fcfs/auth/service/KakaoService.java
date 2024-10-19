@@ -3,6 +3,7 @@ package org.hanghae99.fcfs.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
@@ -43,7 +44,7 @@ public class KakaoService {
     @Value("${kakao.client.id}")
     private String kakaoClientId;
 
-    public String kakaoLogin(String code) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public String kakaoLogin(String code, HttpServletRequest request) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
 
@@ -54,7 +55,8 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-        return jwtUtil.createTokenByLogin(kakaoUser.getUsername(), kakaoUser.getRole()).getAccessToken();
+        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
+        return jwtUtil.createTokenByLogin(kakaoUser.getUsername(), kakaoUser.getRole(), secChUaPlatform).getAccessToken();
     }
 
     // 애플리케이션은 인증 코드로 카카오 서버에 토큰을 요청하고, 토큰을 전달 받습니다.
