@@ -1,6 +1,7 @@
 package org.hanghae99.fcfs.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +12,8 @@ import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +77,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser(), userRequestDto));
     }
 
+    @Transactional
     @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
