@@ -182,7 +182,7 @@ public class UserService {
             body += "<h3>" + "감사합니다." + "</h3>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            e.getStackTrace();
         }
         return message;
     }

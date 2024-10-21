@@ -3,6 +3,7 @@ package org.hanghae99.fcfs.user.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 import org.hanghae99.fcfs.order.dto.OrderResponseDto;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.wishList.dto.WishListResponseDto;
@@ -18,7 +19,7 @@ public class UserResponseDto {
     private String address;
     private String phone;
     private UserRoleEnum role;
-    private String social;
+    private UserSocialEnum social;
     private List<WishListResponseDto> wishList;
     private List<OrderResponseDto> orderList;
 
