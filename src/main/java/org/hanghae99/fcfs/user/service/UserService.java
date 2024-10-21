@@ -34,6 +34,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -98,14 +99,22 @@ public class UserService {
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
 
-    public void logout(HttpServletRequest request, User user) {
+    public void logout(HttpServletRequest request, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
+
         String username = user.getUsername();
         String accessToken = jwtUtil.resolveToken(request);
         Long expiration = jwtUtil.getExpiration(accessToken);
         // 레디스에 accessToken 사용못하도록 등록
         redisDao.setBlackList(accessToken, "logout", expiration);
+
         if (redisDao.hasKey(username)) redisDao.deleteRefreshToken(username);
         else throw new IllegalArgumentException("이미 로그아웃한 유저입니다.");
+        // 소셜 로그인 유저의 경우 로그 아웃 시 비밀번호를 바꿔 모든 기기 로그 아웃 시도
+        if (user.getSocial() != null) {
+            user.updatePassword(UUID.randomUUID().toString());
+            userRepository.saveAndFlush(user);
+        }
     }
 
     public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
@@ -130,14 +139,16 @@ public class UserService {
         return new UserResponseDto(user, email, realName, address, phone, wishListResponseDtoList, orderResponseDtoList);
     }
 
-    public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public UserResponseDto updateUser(Long userId, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
         String address = aes128.encryptAes(userRequestDto.getAddress());
         String phone = aes128.encryptAes(userRequestDto.getPhone());
         user.updateProfile(address, phone);
         return new UserResponseDto(userRepository.save(user));
     }
 
-    public ResponseEntity<ApiResponseDto> updatePassword(User user, PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
+    public ResponseEntity<ApiResponseDto> updatePassword(Long userId, PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
         String currentPassword = passwordRequestDto.getCurrentPassword();
         String newPassword = passwordEncoder.encode(passwordRequestDto.getNewPassword());
 

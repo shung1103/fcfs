@@ -62,7 +62,7 @@ public class UserController {
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request) {
-        userService.logout(request, userDetails.getUser()) ;
+        userService.logout(request, userDetails.getUser().getId()) ;
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 
@@ -76,14 +76,14 @@ public class UserController {
     @Operation(summary = "프로필 수정")
     @PutMapping("/update-profile")
     public ResponseEntity<UserResponseDto> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser(), userRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser().getId(), userRequestDto));
     }
 
     @Transactional
     @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
-        return userService.updatePassword(userDetails.getUser(), passwordRequestDto, request);
+        return userService.updatePassword(userDetails.getUser().getId(), passwordRequestDto, request);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
