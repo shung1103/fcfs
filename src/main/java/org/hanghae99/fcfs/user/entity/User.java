@@ -61,7 +61,9 @@ public class User {
         this.passwordChangeCount = 0;
     }
 
-    public void updateProfile(String address, String phone) {
+    public void updateProfile(String email, String realName, String address, String phone) {
+        this.email = email;
+        this.realName = realName;
         this.address = address;
         this.phone = phone;
     }

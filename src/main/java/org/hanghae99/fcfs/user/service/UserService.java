@@ -143,9 +143,11 @@ public class UserService {
 
     public UserResponseDto updateUser(Long userId, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
+        String email = aes128.encryptAes(userRequestDto.getEmail());
+        String realName = aes128.encryptAes(userRequestDto.getRealName());
         String address = aes128.encryptAes(userRequestDto.getAddress());
         String phone = aes128.encryptAes(userRequestDto.getPhone());
-        user.updateProfile(address, phone);
+        user.updateProfile(email, realName, address, phone);
         return new UserResponseDto(userRepository.save(user));
     }
 
