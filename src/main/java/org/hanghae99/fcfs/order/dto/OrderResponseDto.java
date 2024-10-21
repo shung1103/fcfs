@@ -1,23 +1,23 @@
 package org.hanghae99.fcfs.order.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.order.entity.Order;
 
-import java.util.List;
-
 @Getter
+@NoArgsConstructor
 public class OrderResponseDto {
-    private Long orderid;
+    private Long orderId;
     private String username;
+    private String title;
     private Long totalPrice;
-    private List<OrderItemResponseDto> orderItemList;
     private String orderStatus;
 
-    public OrderResponseDto(Order order) {
-        this.orderid = order.getId();
-        this.username = order.getUser().getUsername();
-        this.totalPrice = order.getTotalPrice();
-        this.orderItemList = order.getOrderItemList().stream().map(OrderItemResponseDto::new).toList();
+    public OrderResponseDto(String username, String title, Order order) {
+        this.orderId = order.getId();
+        this.username = username;
+        this.title = title;
+        this.totalPrice = order.getPayment();
         this.orderStatus = order.getOrderStatus();
     }
 }

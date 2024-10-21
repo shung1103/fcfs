@@ -3,10 +3,6 @@ package org.hanghae99.fcfs.wishList.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.fcfs.user.entity.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,12 +14,22 @@ public class WishList {
     @Column(name = "wish_list_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
-    private User user;
+    @Column(name = "wish_user_name", nullable = false)
+    private String wishUserName;
 
-    @OneToMany(mappedBy = "wishList", cascade = CascadeType.REMOVE)
-    private List<WishListItem> wishListItemList = new ArrayList<>();
+    @Column(name = "wish_product_title", nullable = false)
+    private String wishProductTitle;
 
-    public WishList(User user) { this.user = user; }
+    @Column(name = "wish_quantity", nullable = false)
+    private Integer wishQuantity;
+
+    public WishList(String wishUserName, String wishProductTitle, Integer wishQuantity) {
+        this.wishUserName = wishUserName;
+        this.wishProductTitle = wishProductTitle;
+        this.wishQuantity = wishQuantity;
+    }
+
+    public void updateQuantity(Integer quantity) {
+        this.wishQuantity = quantity;
+    }
 }

@@ -7,9 +7,6 @@ import org.hanghae99.fcfs.common.entity.TimeStamped;
 import org.hanghae99.fcfs.order.dto.OrderRequestDto;
 import org.hanghae99.fcfs.user.entity.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -20,23 +17,27 @@ public class Order extends TimeStamped {
     @Column(name = "order_id")
     private Long id;
 
-    @Column(name = "total_price", nullable = false)
-    private Long totalPrice;
+    @Column(name = "order_user_id", nullable = false)
+    private Long orderUserId;
 
-    @Column(name = "order_complete")
+    @Column(name = "order_product_id", nullable = false)
+    private Long orderProductId;
+
+    @Column(name = "order_quantity", nullable = false)
+    private Integer orderQuantity;
+
+    @Column(name = "order_status")
     private String orderStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
-    private User user;
+    @Column(name = "payment")
+    private Long payment;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
-    private List<OrderItem> orderItemList = new ArrayList<>();
-
-    public Order(User user, Long totalPrice, OrderRequestDto orderRequestDto) {
-        this.user = user;
-        this.totalPrice = totalPrice;
-        this.orderStatus = orderRequestDto.getOrderComplete();
+    public Order(Long userId, Long productId, OrderRequestDto orderRequestDto) {
+        this.orderUserId = userId;
+        this.orderProductId = productId;
+        this.orderQuantity = orderRequestDto.getQuantity();
+        this.orderStatus = orderRequestDto.getOrderStatus();
+        this.payment = orderRequestDto.getPayment();
     }
 
     public void updateOrderStatus(String orderStatus) {

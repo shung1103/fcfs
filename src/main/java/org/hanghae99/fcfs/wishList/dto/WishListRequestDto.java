@@ -3,6 +3,6 @@ package org.hanghae99.fcfs.wishList.dto;
 import lombok.Getter;
 
 @Getter
-public class WishListItemRequestDto {
+public class WishListRequestDto {
     private Integer quantity;
 }

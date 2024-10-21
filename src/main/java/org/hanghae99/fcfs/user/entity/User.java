@@ -4,11 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.likemark.entity.LikeMark;
-import org.hanghae99.fcfs.order.entity.Order;
-import org.hanghae99.fcfs.wishList.entity.WishList;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -50,15 +45,6 @@ public class User {
 
     @Column(name = "password_change_count", nullable = false)
     private Integer passwordChangeCount;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private WishList wishList;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Order> orderList;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<LikeMark> likeMarkList;
 
     //회원가입 생성자
     public User(String username, String password, String realName, String address, String phone, String email, UserRoleEnum role) {

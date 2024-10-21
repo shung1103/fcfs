@@ -53,7 +53,8 @@ public class ProductService {
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto reStockProduct(Long productNo, ReStockRequestDto reStockRequestDto) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
-        product.reStock(reStockRequestDto.getReStockQuantity());
+        int newStock = product.getStock() + reStockRequestDto.getReStockQuantity();
+        product.reStock(newStock);
         productRepository.save(product);
         return new ProductResponseDto(product);
     }

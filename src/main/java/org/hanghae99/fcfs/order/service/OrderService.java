@@ -2,19 +2,14 @@ package org.hanghae99.fcfs.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.order.dto.OrderRequestDto;
 import org.hanghae99.fcfs.order.dto.OrderResponseDto;
 import org.hanghae99.fcfs.order.entity.Order;
-import org.hanghae99.fcfs.order.entity.OrderItem;
-import org.hanghae99.fcfs.order.repository.OrderItemRepository;
 import org.hanghae99.fcfs.order.repository.OrderRepository;
 import org.hanghae99.fcfs.product.entity.Product;
+import org.hanghae99.fcfs.product.repository.ProductRepository;
 import org.hanghae99.fcfs.user.entity.User;
-import org.hanghae99.fcfs.wishList.entity.WishList;
-import org.hanghae99.fcfs.wishList.entity.WishListItem;
-import org.hanghae99.fcfs.wishList.repository.WishListItemRepository;
-import org.hanghae99.fcfs.wishList.service.WishListService;
+import org.hanghae99.fcfs.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,85 +22,72 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final WishListService wishListService;
-    private final WishListItemRepository wishListItemRepository;
 
-    public ResponseEntity<ApiResponseDto> createOrder(OrderRequestDto orderRequestDto, User user) {
-        WishList wishList = wishListService.createWishList(user);
-        if (wishList.getWishListItemList().isEmpty()) throw new NullPointerException("위시 리스트에 상품이 없습니다.");
+    public ResponseEntity<ApiResponseDto> createOrder(OrderRequestDto orderRequestDto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
+        Product product = productRepository.findById(orderRequestDto.getProductId()).orElseThrow(NullPointerException::new);
+        if (product.getStock() < orderRequestDto.getQuantity()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ApiResponseDto(product.getTitle() + "의 재고가 부족합니다.", HttpStatus.BAD_REQUEST.value()));
+        }
 
-        long totalPrice = 0L;
-        for (WishListItem wishListItem : wishList.getWishListItemList()) totalPrice += wishListItem.getProduct().getPrice() * wishListItem.getWishListItemQuantity();
-
+        long totalPrice = product.getPrice() * orderRequestDto.getQuantity();
         if (orderRequestDto.getPayment().equals(totalPrice)) {
-            Order order = new Order(user, totalPrice, orderRequestDto);
+            Order order = new Order(user.getId(), product.getId(), orderRequestDto);
+            product.reStock(product.getStock() - orderRequestDto.getQuantity());
             orderRepository.save(order);
-
-            for (WishListItem wishListItem : wishList.getWishListItemList()) {
-                if (wishListItem.getProduct().getStock() < wishListItem.getWishListItemQuantity()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                            new ApiResponseDto(wishListItem.getProduct().getTitle() + "의 재고가 부족합니다.", HttpStatus.BAD_REQUEST.value()));
-                }
-                OrderItem orderItem = new OrderItem(wishListItem, order);
-                Product product = wishListItem.getProduct();
-                product.reStock(wishListItem.getWishListItemQuantity() * (-1));
-
-                orderItemRepository.save(orderItem);
-                wishListItemRepository.delete(wishListItem);
-            }
-
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("결제가 완료 되었습니다.", HttpStatus.CREATED.value()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("금액을 올바르게 입력해 주세요.", HttpStatus.BAD_REQUEST.value()));
         }
     }
 
-    public ResponseEntity<List<OrderResponseDto>> getMyOrders(User user) {
-        List<Order> orderList = orderRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
+    public ResponseEntity<List<OrderResponseDto>> getMyOrders(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
+        List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(user.getId());
         if (orderList.isEmpty()) {
             throw new NullPointerException("주문이 없습니다.");
         } else {
             List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
             for (Order order : orderList) {
-                OrderResponseDto orderResponseDto = new OrderResponseDto(order);
+                Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(NullPointerException::new);
+                OrderResponseDto orderResponseDto = new OrderResponseDto(user.getUsername(), product.getTitle(), order);
                 orderResponseDtoList.add(orderResponseDto);
             }
             return ResponseEntity.status(HttpStatus.OK).body(orderResponseDtoList);
         }
     }
 
-    public ResponseEntity<OrderResponseDto> getOneOrder(Long orderNo, User user) {
+    public ResponseEntity<OrderResponseDto> getOneOrder(Long orderNo, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
         Order order = orderRepository.findById(orderNo).orElseThrow(() -> new NullPointerException("존재하지 않는 주문 번호입니다."));
-        if (user.getId().equals(order.getUser().getId()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new OrderResponseDto(order));
-        } else {
-            throw new IllegalArgumentException("해당 번호의 주문에 대한 권한이 없습니다.");
-        }
+        Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(NullPointerException::new);
+        return ResponseEntity.status(HttpStatus.OK).body(new OrderResponseDto(user.getUsername(), product.getTitle(), order));
     }
 
-    public ResponseEntity<ApiResponseDto> cancelOrder(Long orderNo, User user) {
+    public ResponseEntity<ApiResponseDto> cancelOrder(Long orderNo, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
         Order order = orderRepository.findById(orderNo).orElseThrow(() -> new NullPointerException("존재하지 않는 주문 번호입니다."));
-        if (user.getId().equals(order.getUser().getId()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
-            switch (order.getOrderStatus()) {
-                case "배송 중":
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("배송이 진행 중입니다.", HttpStatus.BAD_REQUEST.value()));
-                case "배송 완료":
-                    if (Duration.between(order.getModifiedAt(), LocalDateTime.now()).toDays() < 2) {
-                        order.updateOrderStatus("반품 진행");
-                        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto("반품을 진행합니다.", HttpStatus.OK.value()));
-                    } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("반품 기한이 지났습니다.", HttpStatus.BAD_REQUEST.value()));
-                    }
-                case "주문 완료":
-                    orderRepository.delete(order);
-                    return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto("주문이 취소 되었습니다.", HttpStatus.OK.value()));
-                default:
-                    throw new RuntimeException();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("해당 주문에 대한 권한이 없습니다.", HttpStatus.BAD_REQUEST.value()));
+
+        switch (order.getOrderStatus()) {
+            case "배송 중":
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("배송이 진행 중입니다.", HttpStatus.BAD_REQUEST.value()));
+            case "배송 완료":
+                if (Duration.between(order.getModifiedAt(), LocalDateTime.now()).toDays() < 2) {
+                    order.updateOrderStatus("반품 진행");
+                    orderRepository.saveAndFlush(order);
+                    return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto("반품을 진행합니다.", HttpStatus.OK.value()));
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("반품 기한이 지났습니다.", HttpStatus.BAD_REQUEST.value()));
+                }
+            case "주문 완료":
+                orderRepository.delete(order);
+                return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto("주문이 취소 되었습니다.", HttpStatus.OK.value()));
+            default:
+                throw new RuntimeException();
         }
     }
 
@@ -120,8 +102,11 @@ public class OrderService {
                 case "반품 진행":
                     if (Duration.between(order.getModifiedAt(), LocalDateTime.now()).toDays() == 1) {
                         order.updateOrderStatus("반품 완료");
-                        List<OrderItem> orderItemList = order.getOrderItemList();
-                        for (OrderItem orderItem : orderItemList) orderItem.getProduct().reStock(orderItem.getOrderItemQuantity());
+                        // 반품된 수량만큼 재고 회복
+                        Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(NullPointerException::new);
+                        int newStock = product.getStock() + order.getOrderQuantity();
+                        product.reStock(newStock);
+                        productRepository.saveAndFlush(product);
                     }
                 default:
                     throw new RuntimeException();
