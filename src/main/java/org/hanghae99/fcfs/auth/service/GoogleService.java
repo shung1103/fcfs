@@ -127,6 +127,10 @@ public class GoogleService {
         String name = jsonNode.get("name").asText();
         String social = "GOOGLE";
 
+        if (username == null) username = jsonNode.get("id").asText();
+        if (email == null) email = "need_update";
+        if (name == null) name = "need_update";
+
         return new SocialUserInfoDto(id, username, email, social, name);
     }
 
