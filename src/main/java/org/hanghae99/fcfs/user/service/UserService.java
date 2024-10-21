@@ -59,7 +59,9 @@ public class UserService {
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
-        } else if (userRepository.existsByEmail(requestDto.getEmail())) {
+        }
+
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         } else {
             sendMail(requestDto.getEmail());
@@ -69,7 +71,7 @@ public class UserService {
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new IllegalArgumentException("관리자 암호가 틀렸습니다.");
             }
             role = UserRoleEnum.ADMIN;
         }
