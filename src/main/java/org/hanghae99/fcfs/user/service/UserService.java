@@ -112,7 +112,7 @@ public class UserService {
 
         if (redisDao.hasKey(username)) redisDao.deleteRefreshToken(username);
         else throw new IllegalArgumentException("이미 로그아웃한 유저입니다.");
-        // 소셜 로그인 유저의 경우 로그 아웃 시 비밀번호를 바꿔 모든 기기 로그 아웃 시도
+        // 소셜 로그인 유저의 경우 로그 아웃 시 비밀번호를 바꿔 모든 기기 로그 아웃
         if (user.getSocial() != null) {
             user.updatePassword(UUID.randomUUID().toString());
             userRepository.saveAndFlush(user);
