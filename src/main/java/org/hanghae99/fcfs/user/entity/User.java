@@ -34,7 +34,7 @@ public class User {
     @Column(name = "social_id", nullable = true)
     private String socialId;
 
-    @Column(name = "social", nullable = true)
+    @Column(name = "social", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserSocialEnum social;
 
@@ -57,6 +57,7 @@ public class User {
         this.phone = phone;
         this.email = email;
         this.role = role;
+        this.social = UserSocialEnum.UNSOCIAL;
         this.passwordChangeCount = 0;
     }
 

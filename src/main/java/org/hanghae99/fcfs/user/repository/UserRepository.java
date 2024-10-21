@@ -1,6 +1,7 @@
 package org.hanghae99.fcfs.user.repository;
 
 import jakarta.validation.constraints.Pattern;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 import org.hanghae99.fcfs.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
-    Optional<User> findBySocialIdAndSocial(String naverId, String social);
+    Optional<User> findBySocialIdAndSocial(String naverId, UserSocialEnum social);
 
 
     Optional<User> findByEmail(String email);

@@ -2,6 +2,7 @@ package org.hanghae99.fcfs.auth.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 
 @Getter
 @NoArgsConstructor
@@ -11,9 +12,9 @@ public class SocialUserInfoDto {
     private String email;
     private String phone;
     private String name;
-    private String social;
+    private UserSocialEnum social;
 
-    public SocialUserInfoDto(String id, String username, String email, String phone, String social, String name) {
+    public SocialUserInfoDto(String id, String username, String email, String phone, UserSocialEnum social, String name) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -22,12 +23,11 @@ public class SocialUserInfoDto {
         this.social = social;
     }
 
-    public SocialUserInfoDto(String id, String username, String email, String social, String name) {
+    public SocialUserInfoDto(String id, String username, String email, UserSocialEnum social, String name) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.name = name;
         this.social = social;
     }
-    // email을 username으로 하기로 해서 변경
 }

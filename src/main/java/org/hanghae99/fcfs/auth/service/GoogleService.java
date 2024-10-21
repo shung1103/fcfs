@@ -126,7 +126,7 @@ public class GoogleService {
         String username = jsonNode.get("email").asText();
         String email = jsonNode.get("email").asText();
         String name = jsonNode.get("name").asText();
-        String social = "GOOGLE";
+        UserSocialEnum social = UserSocialEnum.GOOGLE;
 
         if (username == null) username = jsonNode.get("id").asText();
         if (email == null) email = "need_update";
@@ -139,7 +139,7 @@ public class GoogleService {
     private User registerGoogleUserIfNeeded(SocialUserInfoDto googleUserInfoDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 구글 Id 가 있는지 확인
         String googleId = googleUserInfoDto.getId();
-        String social = googleUserInfoDto.getSocial();
+        UserSocialEnum social = googleUserInfoDto.getSocial();
         User googleUser = userRepository.findBySocialIdAndSocial(googleId, social).orElse(null);
 
         googleId = aes128.encryptAes(googleId);
@@ -150,7 +150,7 @@ public class GoogleService {
             if (sameEmailUser != null) {
                 googleUser = sameEmailUser;
                 // 기존 회원정보에 구글 Id 추가
-                googleUser = googleUser.socialUpdate(googleId, UserSocialEnum.valueOf(social));
+                googleUser = googleUser.socialUpdate(googleId, social);
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -162,7 +162,7 @@ public class GoogleService {
                 String phone = aes128.encryptAes("need_update");
                 String address = aes128.encryptAes("need_update");
                 String realName = aes128.encryptAes(googleUserInfoDto.getName());
-                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, UserSocialEnum.valueOf(social), phone, address, realName);
+                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address, realName);
             }
             userRepository.save(googleUser);
         }

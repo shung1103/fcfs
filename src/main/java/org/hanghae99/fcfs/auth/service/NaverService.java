@@ -137,7 +137,7 @@ public class NaverService {
         String email = jsonNode.get("response").get("email").asText();
         String phone = jsonNode.get("response").get("mobile").asText();
         String name = jsonNode.get("response").get("name").asText();
-        String social = "NAVER";
+        UserSocialEnum social = UserSocialEnum.NAVER;
 
         if (username == null) username = jsonNode.get("response").get("id").asText();
         if (email == null) email = "need_update";
@@ -150,7 +150,7 @@ public class NaverService {
     private User registerNaverUserIfNeeded(SocialUserInfoDto naverUserInfo) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String naverId = naverUserInfo.getId();
-        String social = naverUserInfo.getSocial();
+        UserSocialEnum social = naverUserInfo.getSocial();
         User naverUser = userRepository.findBySocialIdAndSocial(naverId, social).orElse(null);
 
         naverId = aes128.encryptAes(naverId);
@@ -161,7 +161,7 @@ public class NaverService {
             if (sameUsernameUser != null) {
                 naverUser = sameUsernameUser;
                 // 기존 회원정보에 카카오 Id 추가
-                naverUser = naverUser.socialUpdate(naverId, UserSocialEnum.valueOf(social));
+                naverUser = naverUser.socialUpdate(naverId, social);
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -173,7 +173,7 @@ public class NaverService {
                 String phone = aes128.encryptAes(naverUserInfo.getPhone());
                 String address = aes128.encryptAes("need_update");
                 String name = aes128.encryptAes(naverUserInfo.getName());
-                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, UserSocialEnum.valueOf(social), phone, address, name);
+                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address, name);
             }
             userRepository.save(naverUser);
         }

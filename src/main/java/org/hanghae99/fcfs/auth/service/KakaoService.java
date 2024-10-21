@@ -137,7 +137,7 @@ public class KakaoService {
         String email = jsonNode.get("kakao_account").get("email").asText();
         String phone = jsonNode.get("kakao_account").get("phone_number").asText();
         String name = jsonNode.get("kakao_account").get("name").asText();
-        String social = "KAKAO";
+        UserSocialEnum social = UserSocialEnum.KAKAO;
 
         if (username == null) username = jsonNode.get("id").asText();
         if (email == null) email = "need_update";
@@ -153,8 +153,8 @@ public class KakaoService {
     private User registerKakaoUserIfNeeded(SocialUserInfoDto kakaoUserInfo) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String kakaoId = kakaoUserInfo.getId();
-        String social = kakaoUserInfo.getSocial();
-        User kakaoUser = userRepository.findBySocialIdAndSocial(kakaoId,social).orElse(null);
+        UserSocialEnum social = kakaoUserInfo.getSocial();
+        User kakaoUser = userRepository.findBySocialIdAndSocial(kakaoId, social).orElse(null);
 
         kakaoId = aes128.encryptAes(kakaoId);
         if (kakaoUser == null) {
@@ -164,7 +164,7 @@ public class KakaoService {
             if (sameEmailUser != null) {
                 kakaoUser = sameEmailUser;
                 // 기존 회원정보에 카카오 Id 추가
-                kakaoUser = kakaoUser.socialUpdate(kakaoId, UserSocialEnum.valueOf(social));
+                kakaoUser = kakaoUser.socialUpdate(kakaoId, social);
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -174,7 +174,7 @@ public class KakaoService {
                 String phone = aes128.encryptAes(kakaoUserInfo.getPhone());
                 String address = aes128.encryptAes("need_update");
                 String realName = aes128.encryptAes(kakaoUserInfo.getName());
-                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, UserSocialEnum.valueOf(social), phone, address, realName);
+                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address, realName);
             }
             userRepository.save(kakaoUser);
         }
