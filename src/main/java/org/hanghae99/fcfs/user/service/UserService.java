@@ -110,6 +110,7 @@ public class UserService {
 
     public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
         List<WishList> wishLists = wishListRepository.findAllByWishUserName(user.getUsername());
         List<WishListResponseDto> wishListResponseDtoList = new ArrayList<>();
         for (WishList wishList : wishLists) wishListResponseDtoList.add(new WishListResponseDto(wishList));
