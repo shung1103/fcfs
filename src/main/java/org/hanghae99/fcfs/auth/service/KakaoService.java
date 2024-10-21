@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
@@ -163,7 +164,7 @@ public class KakaoService {
             if (sameEmailUser != null) {
                 kakaoUser = sameEmailUser;
                 // 기존 회원정보에 카카오 Id 추가
-                kakaoUser = kakaoUser.socialUpdate(kakaoId, social);
+                kakaoUser = kakaoUser.socialUpdate(kakaoId, UserSocialEnum.valueOf(social));
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -173,7 +174,7 @@ public class KakaoService {
                 String phone = aes128.encryptAes(kakaoUserInfo.getPhone());
                 String address = aes128.encryptAes("need_update");
                 String realName = aes128.encryptAes(kakaoUserInfo.getName());
-                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, social, phone, address, realName);
+                kakaoUser = new User(kakaoUsername,  encodedPassword, UserRoleEnum.USER, email, kakaoId, UserSocialEnum.valueOf(social), phone, address, realName);
             }
             userRepository.save(kakaoUser);
         }

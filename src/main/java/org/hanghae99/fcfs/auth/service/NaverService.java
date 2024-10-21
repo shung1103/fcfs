@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
@@ -160,7 +161,7 @@ public class NaverService {
             if (sameUsernameUser != null) {
                 naverUser = sameUsernameUser;
                 // 기존 회원정보에 카카오 Id 추가
-                naverUser = naverUser.socialUpdate(naverId, social);
+                naverUser = naverUser.socialUpdate(naverId, UserSocialEnum.valueOf(social));
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -172,7 +173,7 @@ public class NaverService {
                 String phone = aes128.encryptAes(naverUserInfo.getPhone());
                 String address = aes128.encryptAes("need_update");
                 String name = aes128.encryptAes(naverUserInfo.getName());
-                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, social, phone, address, name);
+                naverUser = new User(naverUsername,  encodedPassword, UserRoleEnum.USER, email, naverId, UserSocialEnum.valueOf(social), phone, address, name);
             }
             userRepository.save(naverUser);
         }

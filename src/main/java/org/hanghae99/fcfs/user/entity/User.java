@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 
 @Entity
 @Getter
@@ -34,7 +35,8 @@ public class User {
     private String socialId;
 
     @Column(name = "social", nullable = true)
-    private String social;
+    @Enumerated(value = EnumType.STRING)
+    private UserSocialEnum social;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -69,7 +71,7 @@ public class User {
     }
 
     //소셜 회원가입 생성자
-    public User(String username, String password, UserRoleEnum role, String email, String socialId, String social, String phone, String address, String realName) {
+    public User(String username, String password, UserRoleEnum role, String email, String socialId, UserSocialEnum social, String phone, String address, String realName) {
         this.username = username;
         this.password = password;
         this.address = address;
@@ -82,7 +84,7 @@ public class User {
         this.passwordChangeCount = 0;
     }
 
-    public User socialUpdate(String socialId, String social) {
+    public User socialUpdate(String socialId, UserSocialEnum social) {
         this.socialId = socialId;
         this.social = social;
         return this;

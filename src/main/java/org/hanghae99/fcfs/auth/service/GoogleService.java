@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.fcfs.auth.dto.SocialUserInfoDto;
 import org.hanghae99.fcfs.common.config.AES128;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
+import org.hanghae99.fcfs.common.entity.UserSocialEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
@@ -149,7 +150,7 @@ public class GoogleService {
             if (sameEmailUser != null) {
                 googleUser = sameEmailUser;
                 // 기존 회원정보에 구글 Id 추가
-                googleUser = googleUser.socialUpdate(googleId, social);
+                googleUser = googleUser.socialUpdate(googleId, UserSocialEnum.valueOf(social));
             } else {
                 // 신규 회원가입
                 // password: random UUID
@@ -161,7 +162,7 @@ public class GoogleService {
                 String phone = aes128.encryptAes("need_update");
                 String address = aes128.encryptAes("need_update");
                 String realName = aes128.encryptAes(googleUserInfoDto.getName());
-                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, social, phone, address, realName);
+                googleUser = new User(googleUsername, encodedPassword, UserRoleEnum.USER, email, googleId, UserSocialEnum.valueOf(social), phone, address, realName);
             }
             userRepository.save(googleUser);
         }
