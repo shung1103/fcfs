@@ -33,12 +33,12 @@ public class WishListService {
             Integer quantity = wishList.getWishQuantity() + wishListRequestDto.getQuantity();
             wishList.updateQuantity(quantity);
             wishListRepository.saveAndFlush(wishList);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("위시 리스트에 상품을 등록하였습니다.", HttpStatus.CREATED.value()));
         } else {
             WishList wishList = new WishList(user.getUsername(), product.getTitle(), wishListRequestDto.getQuantity());
             wishListRepository.save(wishList);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("위시 리스트에 상품을 등록하였습니다.", HttpStatus.CREATED.value()));
         }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("위시 리스트에 상품을 등록하였습니다.", HttpStatus.CREATED.value()));
     }
 
     public ResponseEntity<List<WishListResponseDto>> getWishListItems(Long userId) {
