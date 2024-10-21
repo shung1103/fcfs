@@ -10,9 +10,17 @@ import org.hanghae99.fcfs.common.config.RedisDao;
 import org.hanghae99.fcfs.common.dto.ApiResponseDto;
 import org.hanghae99.fcfs.common.entity.UserRoleEnum;
 import org.hanghae99.fcfs.common.security.JwtUtil;
+import org.hanghae99.fcfs.order.dto.OrderResponseDto;
+import org.hanghae99.fcfs.order.entity.Order;
+import org.hanghae99.fcfs.order.repository.OrderRepository;
+import org.hanghae99.fcfs.product.entity.Product;
+import org.hanghae99.fcfs.product.repository.ProductRepository;
 import org.hanghae99.fcfs.user.dto.*;
 import org.hanghae99.fcfs.user.entity.User;
 import org.hanghae99.fcfs.user.repository.UserRepository;
+import org.hanghae99.fcfs.wishList.dto.WishListResponseDto;
+import org.hanghae99.fcfs.wishList.entity.WishList;
+import org.hanghae99.fcfs.wishList.repository.WishListRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +32,16 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final WishListRepository wishListRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisDao redisDao;
     private final JavaMailSender javaMailSender;
@@ -97,11 +110,23 @@ public class UserService {
 
     public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        List<WishList> wishLists = wishListRepository.findAllByWishUserName(user.getUsername());
+        List<WishListResponseDto> wishListResponseDtoList = new ArrayList<>();
+        for (WishList wishList : wishLists) wishListResponseDtoList.add(new WishListResponseDto(wishList));
+
+        List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(user.getId());
+        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
+        for (Order order : orderList) {
+            Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(IllegalArgumentException::new);
+            orderResponseDtoList.add(new OrderResponseDto(user.getUsername(), product.getTitle(), order));
+        }
+
         String email = aes128.decryptAes(user.getEmail());
         String realName = aes128.decryptAes(user.getRealName());
         String address = aes128.decryptAes(user.getAddress());
         String phone = aes128.decryptAes(user.getPhone());
-        return new UserResponseDto(user, email, realName, address, phone);
+
+        return new UserResponseDto(user, email, realName, address, phone, wishListResponseDtoList, orderResponseDtoList);
     }
 
     public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
