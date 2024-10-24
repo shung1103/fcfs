@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.order.dto;
+package org.hanghae99.orderservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

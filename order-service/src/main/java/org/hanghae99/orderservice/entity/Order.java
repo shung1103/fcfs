@@ -1,11 +1,9 @@
-package org.hanghae99.fcfs.order.entity;
+package org.hanghae99.orderservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.fcfs.common.entity.TimeStamped;
-import org.hanghae99.fcfs.order.dto.OrderRequestDto;
-import org.hanghae99.fcfs.user.entity.User;
+import org.hanghae99.orderservice.dto.OrderRequestDto;
 
 @Entity
 @Getter

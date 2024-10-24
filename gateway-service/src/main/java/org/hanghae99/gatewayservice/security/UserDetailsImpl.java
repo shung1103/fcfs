@@ -1,7 +1,7 @@
 package org.hanghae99.gatewayservice.security;
 
-import org.hanghae99.fcfs.common.entity.UserRoleEnum;
-import org.hanghae99.fcfs.user.entity.User;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

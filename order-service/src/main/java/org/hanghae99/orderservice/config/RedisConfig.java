@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.config;
+package org.hanghae99.orderservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;

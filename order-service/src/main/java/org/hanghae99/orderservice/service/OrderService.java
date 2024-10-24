@@ -1,15 +1,15 @@
-package org.hanghae99.fcfs.order.service;
+package org.hanghae99.orderservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.order.dto.OrderRequestDto;
-import org.hanghae99.fcfs.order.dto.OrderResponseDto;
-import org.hanghae99.fcfs.order.entity.Order;
-import org.hanghae99.fcfs.order.repository.OrderRepository;
-import org.hanghae99.fcfs.product.entity.Product;
-import org.hanghae99.fcfs.product.repository.ProductRepository;
-import org.hanghae99.fcfs.user.entity.User;
-import org.hanghae99.fcfs.user.repository.UserRepository;
+import org.hanghae99.orderservice.dto.ApiResponseDto;
+import org.hanghae99.orderservice.dto.OrderRequestDto;
+import org.hanghae99.orderservice.dto.OrderResponseDto;
+import org.hanghae99.orderservice.entity.Order;
+import org.hanghae99.orderservice.repository.OrderRepository;
+import org.hanghae99.productservice.entity.Product;
+import org.hanghae99.productservice.repository.ProductRepository;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

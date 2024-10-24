@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.common.dto;
+package org.hanghae99.orderservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

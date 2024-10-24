@@ -1,12 +1,12 @@
-package org.hanghae99.fcfs.wishList.controller;
+package org.hanghae99.orderservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.common.security.UserDetailsImpl;
-import org.hanghae99.fcfs.wishList.dto.WishListRequestDto;
-import org.hanghae99.fcfs.wishList.dto.WishListResponseDto;
-import org.hanghae99.fcfs.wishList.service.WishListService;
+import org.hanghae99.orderservice.dto.ApiResponseDto;
+import org.hanghae99.orderservice.dto.WishListRequestDto;
+import org.hanghae99.orderservice.dto.WishListResponseDto;
+import org.hanghae99.orderservice.service.WishListService;
+import org.hanghae99.userservice.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;

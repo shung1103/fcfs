@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.common.exception;
+package org.hanghae99.orderservice.exception;
 
 import lombok.Getter;
 

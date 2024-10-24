@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.common.config;
+package org.hanghae99.orderservice.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

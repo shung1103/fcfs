@@ -1,8 +1,8 @@
-package org.hanghae99.fcfs.order.dto;
+package org.hanghae99.orderservice.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.fcfs.order.entity.Order;
+import org.hanghae99.orderservice.entity.Order;
 
 @Getter
 @NoArgsConstructor

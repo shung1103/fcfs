@@ -3,7 +3,7 @@ package org.hanghae99.productservice.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.fcfs.product.dto.ProductRequestDto;
+import org.hanghae99.productservice.dto.ProductRequestDto;
 
 @Entity
 @Getter

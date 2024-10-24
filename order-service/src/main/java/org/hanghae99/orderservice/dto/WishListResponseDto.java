@@ -1,7 +1,7 @@
-package org.hanghae99.fcfs.wishList.dto;
+package org.hanghae99.orderservice.dto;
 
 import lombok.Getter;
-import org.hanghae99.fcfs.wishList.entity.WishList;
+import org.hanghae99.orderservice.entity.WishList;
 
 @Getter
 public class WishListResponseDto {

@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.config;
+package org.hanghae99.orderservice.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

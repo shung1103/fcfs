@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.wishList.entity;
+package org.hanghae99.orderservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

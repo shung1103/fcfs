@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.common.config;
+package org.hanghae99.orderservice.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;

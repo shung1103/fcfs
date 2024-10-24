@@ -1,10 +1,10 @@
 package org.hanghae99.gatewayservice.config;
 
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.common.security.JwtAuthenticationFilter;
-import org.hanghae99.fcfs.common.security.JwtAuthorizationFilter;
-import org.hanghae99.fcfs.common.security.JwtUtil;
-import org.hanghae99.fcfs.common.security.UserDetailsServiceImpl;
+import org.hanghae99.gatewayservice.security.JwtAuthenticationFilter;
+import org.hanghae99.gatewayservice.security.JwtAuthorizationFilter;
+import org.hanghae99.gatewayservice.security.JwtUtil;
+import org.hanghae99.gatewayservice.security.UserDetailsServiceImpl;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,8 +2,7 @@ package org.hanghae99.productservice.exception;
 
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.extern.slf4j.Slf4j;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.common.exception.ErrorResponseDto;
+import org.hanghae99.productservice.dto.ApiResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

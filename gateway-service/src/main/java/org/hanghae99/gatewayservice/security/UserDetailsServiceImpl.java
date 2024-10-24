@@ -1,8 +1,7 @@
 package org.hanghae99.gatewayservice.security;
 
-import org.hanghae99.fcfs.common.security.UserDetailsImpl;
-import org.hanghae99.fcfs.user.entity.User;
-import org.hanghae99.fcfs.user.repository.UserRepository;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

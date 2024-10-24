@@ -1,16 +1,16 @@
 package org.hanghae99.productservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.product.dto.ProductRequestDto;
-import org.hanghae99.fcfs.product.dto.ProductResponseDto;
-import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
-import org.hanghae99.fcfs.product.service.ProductService;
+import org.hanghae99.productservice.dto.ApiResponseDto;
+import org.hanghae99.productservice.dto.ProductRequestDto;
+import org.hanghae99.productservice.dto.ProductResponseDto;
+import org.hanghae99.productservice.dto.ReStockRequestDto;
+import org.hanghae99.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.hanghae99.fcfs.wishList.dto;
+package org.hanghae99.orderservice.dto;
 
 import lombok.Getter;
 

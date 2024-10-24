@@ -1,22 +1,22 @@
 package org.hanghae99.productservice.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
-import org.hanghae99.fcfs.product.dto.ProductRequestDto;
-import org.hanghae99.fcfs.product.dto.ProductResponseDto;
-import org.hanghae99.fcfs.product.dto.ReStockRequestDto;
-import org.hanghae99.fcfs.product.entity.Product;
-import org.hanghae99.fcfs.product.repository.ProductRepository;
-import org.hanghae99.fcfs.user.entity.User;
-import org.hanghae99.fcfs.user.repository.UserRepository;
-import org.hanghae99.fcfs.user.service.UserService;
-import org.hanghae99.fcfs.wishList.entity.WishList;
-import org.hanghae99.fcfs.wishList.repository.WishListRepository;
+import org.hanghae99.orderservice.entity.WishList;
+import org.hanghae99.orderservice.repository.WishListRepository;
+import org.hanghae99.productservice.dto.ApiResponseDto;
+import org.hanghae99.productservice.dto.ProductRequestDto;
+import org.hanghae99.productservice.dto.ProductResponseDto;
+import org.hanghae99.productservice.dto.ReStockRequestDto;
+import org.hanghae99.productservice.entity.Product;
+import org.hanghae99.productservice.repository.ProductRepository;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.repository.UserRepository;
+import org.hanghae99.userservice.service.UserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

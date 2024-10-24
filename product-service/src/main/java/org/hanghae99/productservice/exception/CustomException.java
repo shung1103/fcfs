@@ -1,7 +1,6 @@
 package org.hanghae99.productservice.exception;
 
 import lombok.Getter;
-import org.hanghae99.fcfs.common.exception.ErrorCode;
 
 @Getter
 public class CustomException extends RuntimeException {

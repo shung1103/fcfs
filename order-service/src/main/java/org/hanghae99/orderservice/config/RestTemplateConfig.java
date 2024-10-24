@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.config;
+package org.hanghae99.orderservice.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

@@ -1,8 +1,7 @@
-package org.hanghae99.fcfs.common.exception;
-
+package org.hanghae99.orderservice.exception;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.extern.slf4j.Slf4j;
-import org.hanghae99.fcfs.common.dto.ApiResponseDto;
+import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

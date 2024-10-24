@@ -1,6 +1,6 @@
-package org.hanghae99.fcfs.wishList.repository;
+package org.hanghae99.orderservice.repository;
 
-import org.hanghae99.fcfs.wishList.entity.WishList;
+import org.hanghae99.orderservice.entity.WishList;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
