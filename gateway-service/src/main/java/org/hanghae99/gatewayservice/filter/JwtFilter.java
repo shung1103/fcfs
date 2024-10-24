@@ -38,7 +38,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 return chain.filter(exchange);
             }
 
-            String authHeader = request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION).get(0);
+            String authHeader = request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION).getFirst();
             if (!authHeader.startsWith("Bearer ")) {
                 return handleUnauthorized(response, "Invalid Authorization header format.");
             }

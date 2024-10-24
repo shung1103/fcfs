@@ -28,6 +28,7 @@ out/
 application.properties
 application.yml
 .env
+redis.conf
 
 ### NetBeans ###
 /nbproject/private/
