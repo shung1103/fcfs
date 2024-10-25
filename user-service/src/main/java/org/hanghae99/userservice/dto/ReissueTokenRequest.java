@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.dto;
+package org.hanghae99.userservice.dto;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,13 +6,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-public class TokenResponse {
-
-    private final String accessToken;
+public class ReissueTokenRequest {
     private final String refreshToken;
 
-    public TokenResponse(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
+    public ReissueTokenRequest(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 }

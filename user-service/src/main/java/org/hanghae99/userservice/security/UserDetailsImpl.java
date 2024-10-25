@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.security;
+package org.hanghae99.userservice.security;
 
 import org.hanghae99.userservice.entity.User;
 import org.hanghae99.userservice.entity.UserRoleEnum;

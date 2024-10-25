@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.security;
+package org.hanghae99.userservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -7,8 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.gatewayservice.config.RedisDao;
-import org.hanghae99.gatewayservice.dto.ApiResponseDto;
+import org.hanghae99.userservice.config.RedisDao;
+import org.hanghae99.userservice.dto.ApiResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

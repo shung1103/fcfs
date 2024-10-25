@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice.security;
+package org.hanghae99.userservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -6,8 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.hanghae99.gatewayservice.dto.TokenResponse;
 import org.hanghae99.userservice.dto.LoginRequestDto;
+import org.hanghae99.userservice.dto.TokenResponse;
 import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

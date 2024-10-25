@@ -1,12 +1,12 @@
-package org.hanghae99.gatewayservice.security;
+package org.hanghae99.userservice.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.gatewayservice.config.RedisDao;
-import org.hanghae99.gatewayservice.dto.TokenResponse;
+import org.hanghae99.userservice.config.RedisDao;
+import org.hanghae99.userservice.dto.TokenResponse;
 import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
