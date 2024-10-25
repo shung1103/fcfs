@@ -63,7 +63,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
-                        .requestMatchers("/api/user/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/user/**", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

@@ -2,6 +2,8 @@ package org.hanghae99.userservice.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hanghae99.orderservice.dto.OrderResponseDto;
+import org.hanghae99.orderservice.dto.WishListResponseDto;
 import org.hanghae99.userservice.entity.User;
 import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.hanghae99.userservice.entity.UserSocialEnum;
