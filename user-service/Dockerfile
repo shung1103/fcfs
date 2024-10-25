@@ -6,7 +6,7 @@ COPY . .
 
 RUN gradle :user-service:build -x test --no-daemon
 
-FROM openjdk:21-jdk-alpine
+FROM openjdk:21-jdk
 
 WORKDIR /app
 

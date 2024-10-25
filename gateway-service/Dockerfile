@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN gradle :gateway-service:build -x test --no-daemon
+#RUN gradle :gateway-service:build -x test --no-daemon
 
-FROM openjdk:21-jdk-alpine
+FROM openjdk:21-jdk
 
 WORKDIR /app
 
