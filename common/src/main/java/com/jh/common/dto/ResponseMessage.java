@@ -1,4 +1,4 @@
-package main.java.com.jh.common.dto;
+package com.jh.common.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

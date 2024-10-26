@@ -1,4 +1,4 @@
-package main.java.com.jh.common;
+package com.jh.common;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

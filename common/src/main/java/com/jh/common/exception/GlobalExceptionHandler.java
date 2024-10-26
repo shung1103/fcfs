@@ -1,4 +1,4 @@
-package main.java.com.jh.common.exception;
+package com.jh.common.exception;
 
 import com.jh.common.dto.ResponseMessage;
 import com.jh.common.enums.ApiResponseContents;

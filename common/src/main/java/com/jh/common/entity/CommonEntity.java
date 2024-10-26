@@ -1,4 +1,4 @@
-package main.java.com.jh.common.entity;
+package com.jh.common.entity;
 
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;

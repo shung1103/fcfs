@@ -4,16 +4,16 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.productservice.dto.ApiResponseDto;
 import org.hanghae99.productservice.dto.ProductRequestDto;
 import org.hanghae99.productservice.dto.ProductResponseDto;
 import org.hanghae99.productservice.dto.ReStockRequestDto;
 import org.hanghae99.productservice.entity.Product;
+import org.hanghae99.productservice.entity.User;
+import org.hanghae99.productservice.entity.WishList;
 import org.hanghae99.productservice.repository.ProductRepository;
 import org.hanghae99.productservice.repository.UserRepository;
 import org.hanghae99.productservice.repository.WishListRepository;
-import org.hanghae99.userservice.entity.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -72,11 +72,11 @@ public class ProductService {
         product.reStock(newStock);
         productRepository.saveAndFlush(product);
 
-        List<WishList> wishLists = wishListRepository.findAllByWishProductTitle(product.getTitle());
+        List<WishList> wishLists = wishListRepository.findAllByWishProductId(product.getId());
         Queue<User> userQueue = new ArrayDeque<>();
 
         for (WishList wishList : wishLists) {
-            User user = userRepository.findByUsername(wishList.getWishUserName()).orElseThrow(() -> new NullPointerException("User not found"));
+            User user = userRepository.findById(wishList.getWishUserId()).orElseThrow(() -> new NullPointerException("User not found"));
             userQueue.offer(user);
         }
 

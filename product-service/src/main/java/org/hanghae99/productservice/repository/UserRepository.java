@@ -1,6 +1,6 @@
 package org.hanghae99.productservice.repository;
 
-import org.hanghae99.userservice.entity.User;
+import org.hanghae99.productservice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

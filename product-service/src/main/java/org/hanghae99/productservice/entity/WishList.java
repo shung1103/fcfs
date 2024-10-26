@@ -1,4 +1,4 @@
-package org.hanghae99.orderservice.entity;
+package org.hanghae99.productservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,14 +22,4 @@ public class WishList {
 
     @Column(name = "wish_quantity", nullable = false)
     private Integer wishQuantity;
-
-    public WishList(Long wishUserId, Long wishProductId, Integer wishQuantity) {
-        this.wishUserId = wishUserId;
-        this.wishProductId = wishProductId;
-        this.wishQuantity = wishQuantity;
-    }
-
-    public void updateQuantity(Integer quantity) {
-        this.wishQuantity = quantity;
-    }
 }

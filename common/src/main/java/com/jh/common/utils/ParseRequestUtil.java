@@ -1,4 +1,4 @@
-package main.java.com.jh.common.utils;
+package com.jh.common.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 

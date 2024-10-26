@@ -129,7 +129,7 @@ public class UserService {
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
         for (Order order : orderList) {
             Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(IllegalArgumentException::new);
-            orderResponseDtoList.add(new OrderResponseDto(user.getUsername(), product.getTitle(), order));
+            orderResponseDtoList.add(new OrderResponseDto(user.getId(), product.getTitle(), order));
         }
 
         String email = aes128.decryptAes(user.getEmail());

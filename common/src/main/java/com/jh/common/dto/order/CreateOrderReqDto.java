@@ -1,4 +1,4 @@
-package main.java.com.jh.common.dto.order;
+package com.jh.common.dto.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

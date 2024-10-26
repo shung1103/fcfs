@@ -1,4 +1,4 @@
-package main.java.com.jh.common.exception;
+package com.jh.common.exception;
 
 public class BizRuntimeException extends BaseBizException {
 
