@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.WishListRequestDto;
 import org.hanghae99.orderservice.dto.WishListResponseDto;
+import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.service.WishListService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,5 +48,17 @@ public class WishListController {
     @DeleteMapping("/wishList/{wishListItemNo}")
     public ResponseEntity<ApiResponseDto> cancelItem(@PathVariable Long wishListItemNo) {
         return wishListService.cancelItem(wishListItemNo);
+    }
+
+    @Operation(summary = "Eureka 위시 리스트 목록 조회")
+    @GetMapping("/adapt/wishListList/{productId}")
+    public List<WishList> adaptGetWishListList(@PathVariable Long productId) {
+        return wishListService.adaptGetWishListList(productId);
+    }
+
+    @Operation(summary = "Eureka 유저 이름에 맞는 위시 리스트 목록 조회")
+    @GetMapping("/wishList/adapt/wishListResponseDtoList/{userID}")
+    public List<WishListResponseDto> adaptGetWishListResponseDtoList(@PathVariable Long userID) {
+        return wishListService.adaptGetWishListResponseDtoList(userID);
     }
 }

@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.userservice.dto.*;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.entity.WishList;
 import org.hanghae99.userservice.security.UserDetailsImpl;
 import org.hanghae99.userservice.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.List;
+import java.util.Queue;
 
 @Slf4j
 @RestController
@@ -83,6 +86,12 @@ public class UserController {
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
         return userService.updatePassword(userDetails.getUser().getId(), passwordRequestDto, request);
+    }
+
+    @Operation(summary = "Eureka 위시 리스트 유저 리스트")
+    @GetMapping("/adapt/wishLists")
+    public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {
+        return userService.adaptGetUserQueue(wishLists);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})

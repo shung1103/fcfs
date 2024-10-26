@@ -4,16 +4,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.productservice.dto.ApiResponseDto;
-import org.hanghae99.productservice.dto.ProductRequestDto;
-import org.hanghae99.productservice.dto.ProductResponseDto;
-import org.hanghae99.productservice.dto.ReStockRequestDto;
+import org.hanghae99.productservice.dto.*;
+import org.hanghae99.productservice.entity.Order;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.entity.User;
 import org.hanghae99.productservice.entity.WishList;
 import org.hanghae99.productservice.repository.ProductRepository;
-import org.hanghae99.productservice.repository.UserRepository;
-import org.hanghae99.productservice.repository.WishListRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -29,9 +25,9 @@ import java.util.Queue;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-    private final WishListRepository wishListRepository;
     private final JavaMailSender javaMailSender;
+    private final FeignOrderService feignOrderService;
+    private final FeignUserService feignUserService;
 
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
@@ -72,13 +68,8 @@ public class ProductService {
         product.reStock(newStock);
         productRepository.saveAndFlush(product);
 
-        List<WishList> wishLists = wishListRepository.findAllByWishProductId(product.getId());
-        Queue<User> userQueue = new ArrayDeque<>();
-
-        for (WishList wishList : wishLists) {
-            User user = userRepository.findById(wishList.getWishUserId()).orElseThrow(() -> new NullPointerException("User not found"));
-            userQueue.offer(user);
-        }
+        List<WishList> wishLists = feignOrderService.adaptGetWishListList(productNo);
+        Queue<User> userQueue = feignUserService.adaptGetUserQueue(wishLists);
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();
@@ -132,5 +123,24 @@ public class ProductService {
         javaMailSender.send(message);
 
         return number;
+    }
+
+    public Product adaptGetProductNo(Long productNo) {
+        return productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+    }
+
+    public void adaptReStockProduct(Long productNo, Integer quantity) {
+        Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        product.reStock(quantity);
+        productRepository.saveAndFlush(product);
+    }
+
+    public List<OrderResponseDto> adaptGetDtoList(Long userId, List<Order> orderList) {
+        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
+        for (Order order : orderList) {
+            Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(() -> new NullPointerException("Product not found"));
+            orderResponseDtoList.add(new OrderResponseDto(userId, product.getTitle(), order));
+        }
+        return orderResponseDtoList;
     }
 }

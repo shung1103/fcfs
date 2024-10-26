@@ -3,10 +3,9 @@ package org.hanghae99.productservice.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.productservice.dto.ApiResponseDto;
-import org.hanghae99.productservice.dto.ProductRequestDto;
-import org.hanghae99.productservice.dto.ProductResponseDto;
-import org.hanghae99.productservice.dto.ReStockRequestDto;
+import org.hanghae99.productservice.dto.*;
+import org.hanghae99.productservice.entity.Order;
+import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,5 +67,23 @@ public class ProductController {
     @DeleteMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> deleteProduct(@PathVariable Long productNo) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productNo));
+    }
+
+    @Operation(summary = "Eureka 상품 단건 조회")
+    @GetMapping("/adapt/{productNo}")
+    public Product adaptGetProductNo(@PathVariable Long productNo) {
+        return productService.adaptGetProductNo(productNo);
+    }
+
+    @Operation(summary = "Eureka 상품 재입고")
+    @PutMapping("/adapt/{productNo}/re-stock/{quantity}")
+    public void adaptReStockProduct(@PathVariable Long productNo, @PathVariable Integer quantity) {
+        productService.adaptReStockProduct(productNo, quantity);
+    }
+
+    @Operation(summary = "Eureka orderResponseDtoList 출력")
+    @GetMapping("/adapt/{userId}/dtoList")
+    public List<OrderResponseDto> adaptGetDtoList(@PathVariable Long userId, List<Order> orderList) {
+        return productService.adaptGetDtoList(userId, orderList);
     }
 }

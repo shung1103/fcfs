@@ -5,20 +5,11 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.orderservice.dto.OrderResponseDto;
-import org.hanghae99.orderservice.dto.WishListResponseDto;
-import org.hanghae99.orderservice.entity.Order;
-import org.hanghae99.orderservice.entity.WishList;
-import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.userservice.config.AES128;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.*;
-import org.hanghae99.userservice.entity.User;
-import org.hanghae99.userservice.entity.UserRoleEnum;
-import org.hanghae99.userservice.repository.OrderRepository;
-import org.hanghae99.userservice.repository.ProductRepository;
+import org.hanghae99.userservice.entity.*;
 import org.hanghae99.userservice.repository.UserRepository;
-import org.hanghae99.userservice.repository.WishListRepository;
 import org.hanghae99.userservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,22 +22,18 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-    private final WishListRepository wishListRepository;
-    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisDao redisDao;
     private final JavaMailSender javaMailSender;
     private final AES128 aes128;
     private final JwtUtil jwtUtil;
+    private final FeignOrderService feignOrderService;
 
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
@@ -121,16 +108,8 @@ public class UserService {
     public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
-        List<WishList> wishLists = wishListRepository.findAllByWishUserName(user.getUsername());
-        List<WishListResponseDto> wishListResponseDtoList = new ArrayList<>();
-        for (WishList wishList : wishLists) wishListResponseDtoList.add(new WishListResponseDto(wishList));
-
-        List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(user.getId());
-        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
-        for (Order order : orderList) {
-            Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(IllegalArgumentException::new);
-            orderResponseDtoList.add(new OrderResponseDto(user.getId(), product.getTitle(), order));
-        }
+        List<WishListResponseDto> wishListResponseDtoList = feignOrderService.adaptGetWishLists(id);
+        List<OrderResponseDto> orderResponseDtoList = feignOrderService.adaptGetOrders(user.getId());
 
         String email = aes128.decryptAes(user.getEmail());
         String realName = aes128.decryptAes(user.getRealName());
@@ -195,5 +174,15 @@ public class UserService {
         javaMailSender.send(message);
 
         return number;
+    }
+
+    public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {
+        Queue<User> userQueue = new ArrayDeque<>();
+
+        for (WishList wishList : wishLists) {
+            User user = userRepository.findById(wishList.getWishUserId()).orElseThrow(() -> new NullPointerException("User not found"));
+            userQueue.offer(user);
+        }
+        return userQueue;
     }
 }

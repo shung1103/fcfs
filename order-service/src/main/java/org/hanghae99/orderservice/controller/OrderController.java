@@ -10,7 +10,6 @@ import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,9 +46,8 @@ public class OrderController {
     @Operation(summary = "주문 취소")
     @Transactional
     @DeleteMapping("/order/{orderNo}")
-    public ResponseEntity<ApiResponseDto> cancelOrder(@PathVariable Long orderNo, HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-        return orderService.cancelOrder(orderNo, userId);
+    public ResponseEntity<ApiResponseDto> cancelOrder(@PathVariable Long orderNo) {
+        return orderService.cancelOrder(orderNo);
     }
 
     // 완료된 주문 처리
@@ -57,5 +55,11 @@ public class OrderController {
     @Scheduled(cron = "0 0 * * * *") // 1시간마다 업데이트
     public void completeOrder() {
         orderService.completeOrder();
+    }
+
+    @Operation(summary = "Eureka 유저 주문 목록 조회")
+    @GetMapping("/order/adapt/{userId}/orders")
+    public List<OrderResponseDto> adaptGetOrders(@PathVariable Long userId) {
+        return orderService.adaptGetOrders(userId);
     }
 }

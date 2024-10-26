@@ -60,6 +60,7 @@ services:
       - mysql
       - redis
       - eureka-server
+      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
@@ -77,6 +78,7 @@ services:
       - mysql
       - redis
       - eureka-server
+      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
@@ -94,6 +96,7 @@ services:
       - mysql
       - redis
       - eureka-server
+      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root

@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.WishListRequestDto;
 import org.hanghae99.orderservice.dto.WishListResponseDto;
+import org.hanghae99.orderservice.entity.Product;
 import org.hanghae99.orderservice.entity.WishList;
-import org.hanghae99.orderservice.repository.ProductRepository;
-import org.hanghae99.orderservice.repository.UserRepository;
 import org.hanghae99.orderservice.repository.WishListRepository;
-import org.hanghae99.productservice.entity.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,14 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class WishListService {
-    private final UserRepository userRepository;
     private final WishListRepository wishListRepository;
-    private final ProductRepository productRepository;
+    private final FeignProductService feignProductService;
 
     public ResponseEntity<ApiResponseDto> takeItem(Long productNo, WishListRequestDto wishListRequestDto, Long userId) {
-        Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        Product product = feignProductService.getProduct(productNo);
 
-        if (wishListRepository.existsByWishUserIdAndWishProuctId(userId, product.getId())) {
+        if (wishListRepository.existsByWishUserIdAndWishProductId(userId, product.getId())) {
             WishList wishList = wishListRepository.findByWishUserIdAndWishProductId(userId, product.getId());
             Integer quantity = wishList.getWishQuantity() + wishListRequestDto.getQuantity();
             wishList.updateQuantity(quantity);
@@ -59,5 +56,17 @@ public class WishListService {
         WishList wishList = wishListRepository.findById(wishListItemNo).orElseThrow(() -> new NullPointerException("WishList with id " + wishListItemNo + " not found"));
         wishListRepository.delete(wishList);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto("상품을 위시 리스트에서 제거했습니다.", HttpStatus.OK.value()));
+    }
+
+    public List<WishList> adaptGetWishListList(Long productId) {
+        Product product = feignProductService.getProduct(productId);
+        return wishListRepository.findAllByWishProductId(product.getId());
+    }
+
+    public List<WishListResponseDto> adaptGetWishListResponseDtoList(Long userID) {
+        List<WishList> wishLists = wishListRepository.findAllByWishUserId(userID);
+        List<WishListResponseDto> wishListResponseDtoList = new ArrayList<>();
+        for (WishList wishList : wishLists) wishListResponseDtoList.add(new WishListResponseDto(wishList));
+        return wishListResponseDtoList;
     }
 }
