@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.Queue;
 
-@FeignClient(name = "user", url = "http://localhost:8080/")
+@FeignClient(name = "user-service", url = "http://localhost:8080/")
 public interface FeignUserService {
     @RequestMapping(path = "/api/user/adapt/wishLists")
     Queue<User> adaptGetUserQueue(List<WishList> wishLists);

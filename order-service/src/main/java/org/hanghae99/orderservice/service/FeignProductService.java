@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@FeignClient(name = "product", url = "http://localhost:8081/")
+@FeignClient(name = "product-service", url = "http://localhost:8081/")
 public interface FeignProductService {
     @RequestMapping(path = "/api/product/adapt/{productId}")
     Product getProduct(@PathVariable("productId") Long productId);

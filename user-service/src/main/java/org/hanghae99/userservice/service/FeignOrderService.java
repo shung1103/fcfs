@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@FeignClient(name = "order", url = "http://localhost:8082/")
+@FeignClient(name = "order-service", url = "http://localhost:8082/")
 public interface FeignOrderService {
     @RequestMapping(path = "/api/order/adapt/{userId}/orders")
     List<OrderResponseDto> adaptGetOrders(@PathVariable("userId") Long userId);
