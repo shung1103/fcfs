@@ -2,8 +2,12 @@ package org.hanghae99.gatewayservice.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.hanghae99.gatewayservice.config.RedisDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -15,17 +19,29 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.Map;
 
 @Component
 @Slf4j
 public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
+    private final RedisDao redisDao;
     @Value("${jwt.secret.key}")
     private String jwtSecret;
+    private Key key;
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    public JwtFilter() {
+    public JwtFilter(RedisDao redisDao) {
         super(Config.class);
+        this.redisDao = redisDao;
+    }
+
+    @PostConstruct
+    public void init() {
+        byte[] bytes = Base64.getDecoder().decode(jwtSecret);
+        key = Keys.hmacShaKeyFor(bytes);
     }
 
     @Override
@@ -45,11 +61,15 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
             String token = authHeader.substring(7);
 
+            String blackList = redisDao.getBlackList(token);
+            if (blackList != null) {
+                if (blackList.equals("logout")) {
+                    throw new IllegalArgumentException("Please Login again.");
+                }
+            }
+
             try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(jwtSecret)
-                        .parseClaimsJws(token)
-                        .getBody();
+                Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 
                 log.info("JWT Claims: ");
                 ServerHttpRequest.Builder mutatedRequest = request.mutate();

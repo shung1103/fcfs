@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @Operation(summary = "상품 상세 조회")
-    @GetMapping("/{productNo}")
+    @GetMapping("/search/{productNo}")
     public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long productNo) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productNo));
     }
