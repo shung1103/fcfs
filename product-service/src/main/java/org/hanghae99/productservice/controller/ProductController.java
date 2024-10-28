@@ -9,7 +9,6 @@ import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class ProductController {
 
     @Transactional
     @Operation(summary = "상품 생성", description = "관리자 제한")
-    @Secured("ROLE_ADMIN")
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productRequestDto));
@@ -47,7 +45,6 @@ public class ProductController {
     }
 
     @Operation(summary = "상품 재입고")
-    @Secured("ROLE_ADMIN")
     @PutMapping("/{productNo}/re-stock")
     public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.reStockProduct(productNo, reStockRequestDto));
@@ -55,7 +52,6 @@ public class ProductController {
 
     @Transactional
     @Operation(summary = "상품 정보 수정", description = "관리자 제한")
-    @Secured("ROLE_ADMIN")
     @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long productNo, @RequestBody ProductRequestDto productRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productNo, productRequestDto));
@@ -63,7 +59,6 @@ public class ProductController {
 
     @Transactional
     @Operation(summary = "상품 삭제", description = "관리자 제한")
-    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> deleteProduct(@PathVariable Long productNo) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productNo));

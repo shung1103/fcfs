@@ -1,4 +1,4 @@
-package org.hanghae99.gatewayservice;
+package org.hanghae99.gatewayservice.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
