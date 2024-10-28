@@ -108,6 +108,7 @@ public class OrderService {
 
     public List<OrderResponseDto> adaptGetOrders(Long userId) {
         List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(userId);
+        if (orderList.isEmpty()) return new ArrayList<>();
         return feignProductService.adaptGetDtoList(userId, orderList);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.Queue;
 
-@FeignClient(name = "user-service", fallbackFactory = FeignUserServiceFallbackFactory.class)
+@FeignClient(name = "user-service", url = "http://localhost:8080/", fallbackFactory = FeignUserServiceFallbackFactory.class)
 public interface FeignUserService {
     @RequestMapping(path = "/api/user/adapt/wishLists")
     Queue<User> adaptGetUserQueue(List<WishList> wishLists);
