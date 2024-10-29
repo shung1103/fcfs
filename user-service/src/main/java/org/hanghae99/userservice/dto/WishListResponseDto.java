@@ -1,7 +1,6 @@
 package org.hanghae99.userservice.dto;
 
 import lombok.Getter;
-import org.hanghae99.userservice.entity.WishList;
 
 @Getter
 public class WishListResponseDto {

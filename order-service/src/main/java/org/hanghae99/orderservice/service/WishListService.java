@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.WishListRequestDto;
 import org.hanghae99.orderservice.dto.WishListResponseDto;
-import org.hanghae99.orderservice.entity.Product;
+import org.hanghae99.orderservice.dto.Product;
 import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.repository.WishListRepository;
 import org.springframework.http.HttpStatus;

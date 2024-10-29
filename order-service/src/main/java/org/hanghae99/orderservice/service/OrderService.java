@@ -5,7 +5,7 @@ import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.OrderRequestDto;
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
-import org.hanghae99.orderservice.entity.Product;
+import org.hanghae99.orderservice.dto.Product;
 import org.hanghae99.orderservice.repository.OrderRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class OrderService {
             Order order = new Order(userId, product.getId(), orderRequestDto);
             feignProductService.reStockProduct(product.getId(), product.getStock() - orderRequestDto.getQuantity());
             orderRepository.save(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("결제가 완료 되었습니다.", HttpStatus.CREATED.value()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("주문이 완료 되었습니다.", HttpStatus.CREATED.value()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("금액을 올바르게 입력해 주세요.", HttpStatus.BAD_REQUEST.value()));
         }

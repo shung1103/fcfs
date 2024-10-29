@@ -3,7 +3,7 @@ package org.hanghae99.orderservice.service;
 import org.hanghae99.orderservice.config.FeignProductServiceFallbackFactory;
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
-import org.hanghae99.orderservice.entity.Product;
+import org.hanghae99.orderservice.dto.Product;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

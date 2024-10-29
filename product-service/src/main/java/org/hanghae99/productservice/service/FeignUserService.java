@@ -1,8 +1,8 @@
 package org.hanghae99.productservice.service;
 
 import org.hanghae99.productservice.config.FeignUserServiceFallbackFactory;
-import org.hanghae99.productservice.entity.User;
-import org.hanghae99.productservice.entity.WishList;
+import org.hanghae99.productservice.dto.User;
+import org.hanghae99.productservice.dto.WishList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 

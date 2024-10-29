@@ -2,7 +2,7 @@ package org.hanghae99.orderservice.config;
 
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
-import org.hanghae99.orderservice.entity.Product;
+import org.hanghae99.orderservice.dto.Product;
 import org.hanghae99.orderservice.service.FeignProductService;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;

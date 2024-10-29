@@ -17,20 +17,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/wishList")
 public class WishListController {
     private final WishListService wishListService;
 
     @Operation(summary = "위시 리스트에 상품 담기")
     @Transactional
-    @PostMapping("/wishList/{productNo}")
+    @PostMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> takeItem(@PathVariable Long productNo, @RequestBody WishListRequestDto wishListRequestDto, HttpServletRequest request) {
         long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return wishListService.takeItem(productNo, wishListRequestDto, userId);
     }
 
     @Operation(summary = "위시 리스트 내부 조회")
-    @GetMapping("/wishList")
+    @GetMapping("/list")
     public ResponseEntity<List<WishListResponseDto>> getWishListItems(HttpServletRequest request) {
         long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return wishListService.getWishListItems(userId);
@@ -38,14 +38,14 @@ public class WishListController {
 
     @Operation(summary = "위시 리스트 내부 상품 개수 수정")
     @Transactional
-    @PutMapping("/wishListItem/{wishListItemNo}")
+    @PutMapping("/{wishListItemNo}")
     public ResponseEntity<WishListResponseDto> updateWishListItemQuantity(@PathVariable Long wishListItemNo, @RequestBody WishListRequestDto wishListRequestDto) {
         return wishListService.updateWishListItemQuantity(wishListItemNo, wishListRequestDto);
     }
 
     @Operation(summary = "위시 리스트 상품 취소")
     @Transactional
-    @DeleteMapping("/wishList/{wishListItemNo}")
+    @DeleteMapping("/{wishListItemNo}")
     public ResponseEntity<ApiResponseDto> cancelItem(@PathVariable Long wishListItemNo) {
         return wishListService.cancelItem(wishListItemNo);
     }
@@ -57,7 +57,7 @@ public class WishListController {
     }
 
     @Operation(summary = "Eureka 유저 이름에 맞는 위시 리스트 목록 조회")
-    @GetMapping("/wishList/adapt/wishListResponseDtoList/{userID}")
+    @GetMapping("/adapt/wishListResponseDtoList/{userID}")
     public List<WishListResponseDto> adaptGetWishListResponseDtoList(@PathVariable Long userID) {
         return wishListService.adaptGetWishListResponseDtoList(userID);
     }

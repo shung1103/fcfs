@@ -2,7 +2,6 @@ package org.hanghae99.productservice.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.productservice.entity.Order;
 
 @Getter
 @NoArgsConstructor

@@ -17,27 +17,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/order")
 public class OrderController {
     private final OrderService orderService;
 
     @Operation(summary = "상품 결제 및 주문 생성")
     @Transactional
-    @PostMapping("/order")
+    @PostMapping("/create")
     public ResponseEntity<ApiResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, HttpServletRequest request) {
         long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.createOrder(orderRequestDto, userId);
     }
 
     @Operation(summary = "나의 주문 목록 조회")
-    @GetMapping("/orders")
+    @GetMapping("/list")
     public ResponseEntity<List<OrderResponseDto>> getMyOrders(HttpServletRequest request) {
         long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.getMyOrders(userId);
     }
 
     @Operation(summary = "주문 단건 조회")
-    @GetMapping("/order/{orderNo}")
+    @GetMapping("/{orderNo}")
     public ResponseEntity<OrderResponseDto> getOneOrder(@PathVariable Long orderNo, HttpServletRequest request) {
         long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.getOneOrder(orderNo, userId);
@@ -45,7 +45,7 @@ public class OrderController {
 
     @Operation(summary = "주문 취소")
     @Transactional
-    @DeleteMapping("/order/{orderNo}")
+    @PutMapping("/{orderNo}")
     public ResponseEntity<ApiResponseDto> cancelOrder(@PathVariable Long orderNo) {
         return orderService.cancelOrder(orderNo);
     }
@@ -58,7 +58,7 @@ public class OrderController {
     }
 
     @Operation(summary = "Eureka 유저 주문 목록 조회")
-    @GetMapping("/order/adapt/{userId}/orders")
+    @GetMapping("/adapt/{userId}/orders")
     public List<OrderResponseDto> adaptGetOrders(@PathVariable Long userId) {
         return orderService.adaptGetOrders(userId);
     }

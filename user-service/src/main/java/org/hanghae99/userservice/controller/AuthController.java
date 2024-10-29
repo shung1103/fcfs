@@ -20,14 +20,14 @@ import java.security.InvalidKeyException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/login")
 public class AuthController {
 
     private final NaverService naverService;
     private final KakaoService kakaoService;
     private final GoogleService googleService;
 
-    @GetMapping("/naver/login")
+    @GetMapping("/naver")
     public RedirectView naverLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = naverService.naverLogin(code, request);
@@ -35,7 +35,7 @@ public class AuthController {
         return new RedirectView("/");
     }
 
-    @GetMapping("/kakao/login")
+    @GetMapping("/kakao")
     public RedirectView kakaoLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = kakaoService.kakaoLogin(code, request);
@@ -43,7 +43,7 @@ public class AuthController {
         return new RedirectView("/");
     }
 
-    @GetMapping("/google/login")
+    @GetMapping("/google")
     public RedirectView googleLogin(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         String token = googleService.googleLogin(code, request);

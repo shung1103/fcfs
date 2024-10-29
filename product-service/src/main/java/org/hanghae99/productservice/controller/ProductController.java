@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.productservice.dto.*;
-import org.hanghae99.productservice.entity.Order;
+import org.hanghae99.productservice.dto.Order;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
