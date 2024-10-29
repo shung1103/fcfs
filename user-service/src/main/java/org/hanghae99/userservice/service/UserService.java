@@ -85,7 +85,7 @@ public class UserService {
         }
 
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform, user.getPasswordChangeCount());
+        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform, user.getPasswordVersion());
         response.addHeader("Authorization", token.getAccessToken());
 
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
@@ -141,7 +141,7 @@ public class UserService {
         if (passwordEncoder.matches(currentPassword, user.getPassword())) {
             user.updatePassword(newPassword);
             userRepository.save(user);
-            jwtUtil.reissueAtk(user.getUsername(), user.getRole(), redisDao.getRefreshToken(user.getUsername()), request, response, user.getPasswordChangeCount());
+            jwtUtil.reissueAtk(user.getUsername(), user.getRole(), redisDao.getRefreshToken(user.getPasswordVersion()), request, response, user.getPasswordVersion());
         } else {
             throw new IllegalArgumentException("잘못된 이전 비밀번호입니다.");
         }

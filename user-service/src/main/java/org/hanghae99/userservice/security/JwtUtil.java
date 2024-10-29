@@ -56,40 +56,47 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform, Integer passwordChangeCount) {
+    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform, String passwordVersion) {
         Date date = new Date();
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
-                        .claim("passwordChangeCount", passwordChangeCount) // 비밀번호 변경 시 모든 기기 로그아웃
+                        .claim("passwordVersion", passwordVersion) // 비밀번호 변경 시 모든 기기 로그아웃
                         .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
+    public String createRefreshToken(Long tokenExpireTime, String platform, String passwordVersion) {
+        Date date = new Date();
+        return BEARER_PREFIX + Jwts.builder().setSubject(passwordVersion)
+                .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
+                .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
+    }
+
     // 유저 로그인 후 토큰 발행
-    public TokenResponse createTokenByLogin(String username, UserRoleEnum role, String platform, Integer passwordChangeCount) {
-        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, platform, passwordChangeCount);
-        String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME, platform, passwordChangeCount);
-        redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
+    public TokenResponse createTokenByLogin(String username, UserRoleEnum role, String platform, String passwordVersion) {
+        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, platform, passwordVersion);
+        String refreshToken = createRefreshToken(REFRESH_TOKEN_TIME, platform, passwordVersion);
+        redisDao.setRefreshToken(passwordVersion, refreshToken, REFRESH_TOKEN_TIME);
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    //AccessToken 재발행 + refreshToken 함께 발행
-    public void reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, HttpServletResponse response, Integer passwordChangeCount) {
+    //AccessToken 재발행
+    public void reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, HttpServletResponse response, String passwordVersion) {
         // 레디스 저장된 리프레쉬토큰값을 가져와서 입력된 reToken 같은지 유무 확인
-        if (!redisDao.getRefreshToken(username).equals(reToken)) {
+        if (!redisDao.getRefreshToken(passwordVersion).equals(reToken)) {
             throw new IllegalArgumentException();
         }
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
-        String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
+        String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordVersion);
         redisDao.deleteBlackList(username);
-        redisDao.deleteRefreshToken(username);
-        redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
         response.addHeader(AUTHORIZATION_HEADER, accessToken);
     }
 

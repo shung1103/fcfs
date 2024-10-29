@@ -91,12 +91,12 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
             } catch (ExpiredJwtException e) {
                 Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-                String username = claims.getSubject();
-                if (redisDao.hasKey(username)) {
+                String passwordVersion = claims.get("passwordVersion", String.class);
+                if (redisDao.hasKey(passwordVersion)) {
+                    String username = claims.getSubject();
                     UserRoleEnum role = UserRoleEnum.valueOf(claims.get("auth", String.class));
-                    Integer passwordChangeCount = claims.get("passwordChangeCount", Integer.class);
                     String secChUaPlatform = claims.get("platform", String.class);
-                    String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
+                    String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordVersion);
                     response.getHeaders().add(HttpHeaders.AUTHORIZATION, accessToken);
                 } else logger.error("Expired JWT token, 만료된 JWT token 입니다.");
             } catch (UnsupportedJwtException e) {
@@ -115,14 +115,14 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform, Integer passwordChangeCount) {
+    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform, String passwordVersion) {
         Date date = new Date();
         return "Bearer " +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim("Authorization", role) // 사용자 권한
                         .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
-                        .claim("passwordChangeCount", passwordChangeCount) // 비밀번호 변경 시 모든 기기 로그아웃
+                        .claim("passwordVersion", passwordVersion) // 비밀번호 변경 시 모든 기기 로그아웃
                         .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘

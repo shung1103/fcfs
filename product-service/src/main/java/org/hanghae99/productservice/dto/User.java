@@ -24,5 +24,5 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    private Integer passwordChangeCount;
+    private String passwordVersion;
 }

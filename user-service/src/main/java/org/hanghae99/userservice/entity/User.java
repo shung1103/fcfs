@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -44,7 +46,7 @@ public class User {
     private UserRoleEnum role;
 
     @Column(name = "password_change_count", nullable = false)
-    private Integer passwordChangeCount;
+    private String passwordVersion;
 
     //회원가입 생성자
     public User(String username, String password, String realName, String address, String phone, String email, UserRoleEnum role) {
@@ -56,7 +58,7 @@ public class User {
         this.email = email;
         this.role = role;
         this.social = UserSocialEnum.UNSOCIAL;
-        this.passwordChangeCount = 0;
+        this.passwordVersion = UUID.randomUUID().toString();
     }
 
     public void updateProfile(String email, String realName, String address, String phone) {
@@ -68,7 +70,7 @@ public class User {
 
     public void updatePassword(String password) {
         this.password = password;
-        this.passwordChangeCount++;
+        this.passwordVersion = UUID.randomUUID().toString();
     }
 
     //소셜 회원가입 생성자
@@ -82,7 +84,7 @@ public class User {
         this.social = social;
         this.email = email;
         this.role = role;
-        this.passwordChangeCount = 0;
+        this.passwordVersion = UUID.randomUUID().toString();
     }
 
     public User socialUpdate(String socialId, UserSocialEnum social) {
