@@ -60,22 +60,16 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             ServerHttpRequest request = exchange.getRequest();
             ServerHttpResponse response = exchange.getResponse();
 
-            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                return chain.filter(exchange);
-            }
+            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) return chain.filter(exchange);
 
             String authHeader = request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION).getFirst();
-            if (!authHeader.startsWith("Bearer ")) {
-                return handleUnauthorized(response, "Invalid Authorization header format.");
-            }
+            if (!authHeader.startsWith("Bearer ")) return handleUnauthorized(response);
 
             String token = authHeader.substring(7);
 
             String blackList = redisDao.getBlackList(token);
             if (blackList != null) {
-                if (blackList.equals("logout")) {
-                    throw new IllegalArgumentException("Please Login again.");
-                }
+                if (blackList.equals("logout")) throw new IllegalArgumentException("Please Login again.");
             }
 
             try {
@@ -135,10 +129,10 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                         .compact();
     }
 
-    private Mono<Void> handleUnauthorized(ServerHttpResponse response, String message) {
+    private Mono<Void> handleUnauthorized(ServerHttpResponse response) {
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add("Content-Type", "application/json");
-        String body = String.format("{\"error\": \"%s\", \"message\": \"%s\"}", HttpStatus.UNAUTHORIZED.getReasonPhrase(), message);
+        String body = String.format("{\"error\": \"%s\", \"message\": \"%s\"}", HttpStatus.UNAUTHORIZED.getReasonPhrase(), "Invalid Authorization header format.");
         DataBuffer buffer = response.bufferFactory().wrap(body.getBytes());
         return response.writeWith(Mono.just(buffer));
     }
