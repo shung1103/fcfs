@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.TokenResponse;
@@ -38,9 +39,6 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     private final RedisDao redisDao;
-
-    // 로그 설정
-    public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
 
     @PostConstruct
     public void init() {
@@ -81,7 +79,7 @@ public class JwtUtil {
     }
 
     //AccessToken 재발행 + refreshToken 함께 발행
-    public void reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, Integer passwordChangeCount) {
+    public void reissueAtk(String username, UserRoleEnum role, String reToken, HttpServletRequest request, HttpServletResponse response, Integer passwordChangeCount) {
         // 레디스 저장된 리프레쉬토큰값을 가져와서 입력된 reToken 같은지 유무 확인
         if (!redisDao.getRefreshToken(username).equals(reToken)) {
             throw new IllegalArgumentException();
@@ -89,33 +87,10 @@ public class JwtUtil {
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
         String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
         String refreshToken = createToken(username, role, REFRESH_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
+        redisDao.deleteBlackList(username);
+        redisDao.deleteRefreshToken(username);
         redisDao.setRefreshToken(username, refreshToken, REFRESH_TOKEN_TIME);
-    }
-
-    // 토큰 검증
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-        } catch (ExpiredJwtException e) {
-            logger.error("Expired JWT token, 만료된 JWT token 입니다.");
-        } catch (UnsupportedJwtException e) {
-            logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
-        }
-        return false;
-    }
-
-    // 토큰에서 사용자 정보 가져오기
-    public Claims getUserInfoFromToken(String token) throws ExpiredJwtException {
-        try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
+        response.addHeader(AUTHORIZATION_HEADER, accessToken);
     }
 
     // 액셋스 토큰의 만료시간 조회

@@ -60,22 +60,4 @@ public class RedisConfig {
 
         return redisTemplate;
     }
-
-    // Redis Cache
-    @Bean
-    public CacheManager productCacheManager(RedisConnectionFactory cf) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) // Value Serializer 변경
-                .disableCachingNullValues()
-                .entryTtl(Duration.ofMinutes(3L)); // 캐시 수명 3분
-
-        Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
-        redisCacheConfigurationMap.put("Products", redisCacheConfiguration.entryTtl(Duration.ofMinutes(5)));
-
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf)
-                .withInitialCacheConfigurations(redisCacheConfigurationMap)
-                .cacheDefaults(redisCacheConfiguration)
-                .build();
-    }
 }

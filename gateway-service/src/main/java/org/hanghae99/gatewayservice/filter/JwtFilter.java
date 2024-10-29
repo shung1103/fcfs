@@ -1,13 +1,14 @@
 package org.hanghae99.gatewayservice.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.gatewayservice.config.RedisDao;
+import org.hanghae99.gatewayservice.entity.UserRoleEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -21,17 +22,26 @@ import reactor.core.publisher.Mono;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 
 @Component
 @Slf4j
 public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
-
     private final RedisDao redisDao;
+
     @Value("${jwt.secret.key}")
     private String jwtSecret;
+
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+    // 토큰 만료시간
+    private final long ACCESS_TOKEN_TIME = 60 * 30 * 1000L; // 30분
+    private static final long REFRESH_TOKEN_TIME = 1000 * 60 * 60 * 24 * 7L;// 7일
+
+    // 로그 설정
+    public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
 
     public JwtFilter(RedisDao redisDao) {
         super(Config.class);
@@ -83,9 +93,22 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 request = mutatedRequest.build();
                 exchange = exchange.mutate().request(request).build();
 
-            } catch (Exception e) {
-                log.error("JWT validation failed", e);
-                return handleUnauthorized(response, "JWT validation failed: " + e.getMessage());
+            } catch (SecurityException | MalformedJwtException e) {
+                logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            } catch (ExpiredJwtException e) {
+                Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+                String username = claims.getSubject();
+                if (redisDao.hasKey(username)) {
+                    UserRoleEnum role = UserRoleEnum.valueOf(claims.get("auth", String.class));
+                    Integer passwordChangeCount = claims.get("passwordChangeCount", Integer.class);
+                    String secChUaPlatform = claims.get("platform", String.class);
+                    String accessToken = createToken(username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordChangeCount);
+                    response.getHeaders().add(HttpHeaders.AUTHORIZATION, accessToken);
+                } else logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+            } catch (UnsupportedJwtException e) {
+                logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+            } catch (IllegalArgumentException e) {
+                logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
             }
 
             log.info("Custom PRE filter: request uri -> {}", request.getURI());
@@ -95,6 +118,21 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 log.info("Custom POST filter: response status code -> {}", response.getStatusCode());
             }));
         };
+    }
+
+    // 토큰 생성
+    public String createToken(String username, UserRoleEnum role, Long tokenExpireTime, String platform, Integer passwordChangeCount) {
+        Date date = new Date();
+        return "Bearer " +
+                Jwts.builder()
+                        .setSubject(username) // 사용자 식별자값(ID)
+                        .claim("Authorization", role) // 사용자 권한
+                        .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
+                        .claim("passwordChangeCount", passwordChangeCount) // 비밀번호 변경 시 모든 기기 로그아웃
+                        .setExpiration(new Date(date.getTime() + tokenExpireTime)) // 만료 시간
+                        .setIssuedAt(date) // 발급일
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                        .compact();
     }
 
     private Mono<Void> handleUnauthorized(ServerHttpResponse response, String message) {

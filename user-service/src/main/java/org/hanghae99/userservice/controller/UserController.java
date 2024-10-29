@@ -84,8 +84,8 @@ public class UserController {
     @Transactional
     @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
-    public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request) {
-        return userService.updatePassword(userDetails.getUser().getId(), passwordRequestDto, request);
+    public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request, HttpServletResponse response) {
+        return userService.updatePassword(userDetails.getUser().getId(), passwordRequestDto, request, response);
     }
 
     @Operation(summary = "Eureka 위시 리스트 유저 리스트")
