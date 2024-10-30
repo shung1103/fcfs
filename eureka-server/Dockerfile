@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN gradle :eureka-server:build -x test --no-daemon
+RUN gradle :eureka-server:build -build test --no-daemon
 
 FROM openjdk:21-jdk-slim
 

@@ -10,8 +10,8 @@ FROM openjdk:21-jdk
 
 WORKDIR /app
 
-COPY --from=builder /app/user-service/build/libs/*.jar app.jar
+COPY /build/libs/*.jar app.jar
 
-COPY --from=builder /app/user-service/src/main/resources/application.yml /app/application.yml
+COPY /src/main/resources/application.yml /app/application.yml
 
 ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/application.yml"]

@@ -1,0 +1,63 @@
+services:
+  mysql:
+    platform: linux/amd64
+    image: mysql:8.0.33
+    container_name: mysql-container
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=fcfs
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_unicode_ci
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    networks:
+      - docker-cons
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/conf/redis.conf
+    command: redis-server /usr/local/conf/redis.conf
+    restart:
+      unless-stopped
+    networks:
+      - docker-cons
+
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - docker-cons
+
+  gateway-service:
+    image: gateway-service:latest
+    container_name: gateway-service
+    depends_on:
+      - mysql
+      - redis
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    ports:
+      - "8000:8000"
+    networks:
+      - docker-cons
+
+volumes:
+  mysql-data:
+
+networks:
+  docker-cons:
+    driver: bridge

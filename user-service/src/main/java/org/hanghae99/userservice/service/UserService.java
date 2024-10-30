@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.userservice.config.AES128;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.*;
@@ -24,6 +25,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -87,6 +89,7 @@ public class UserService {
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
         TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform, user.getPasswordVersion());
         response.addHeader("Authorization", token.getAccessToken());
+        log.info("JWT access token : " + token.getAccessToken());
 
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }

@@ -4,14 +4,14 @@ WORKDIR /app
 
 COPY . .
 
-RUN gradle :product-service:build -x test --no-daemon
+RUN gradle :product-service:build -build test --no-daemon
 
 FROM openjdk:21-jdk
 
 WORKDIR /app
 
-COPY --from=builder /app/product-service/build/libs/*.jar app.jar
+COPY /build/libs/*.jar app.jar
 
-COPY --from=builder /app/product-service/src/main/resources/application.yml /app/application.yml
+COPY /src/main/resources/application.yml /app/application.yml
 
 ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/application.yml"]

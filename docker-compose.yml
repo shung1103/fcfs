@@ -1,66 +1,7 @@
 services:
-  mysql:
-    platform: linux/amd64
-    image: mysql:8.0.33
-    container_name: mysql-container
-    restart: unless-stopped
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=fcfs
-      - MYSQL_CHARSET=utf8mb4
-      - MYSQL_COLLATION=utf8mb4_unicode_ci
-    command:
-      - "mysqld"
-      - "--character-set-server=utf8mb4"
-      - "--collation-server=utf8mb4_unicode_ci"
-    networks:
-      - second_docker
-
-  redis:
-    image: redis
-    container_name: redis
-    hostname: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis.conf:/usr/local/conf/redis.conf
-    command: redis-server /usr/local/conf/redis.conf
-    restart:
-      unless-stopped
-    networks:
-      - second_docker
-
-  eureka-server:
-    image: eureka-server:latest
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-    networks:
-      - second_docker
-
-  gateway-service:
-     image: gateway-service:latest
-     container_name: gateway-service
-     depends_on:
-       - eureka-server
-     environment:
-       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-     ports:
-       - "8000:8000"
-     networks:
-       - second_docker
-
   order-service:
     image: order-service:latest
     container_name: order-service
-    depends_on:
-      - mysql
-      - redis
-      - eureka-server
-      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
@@ -69,16 +10,11 @@ services:
     ports:
       - "8082:8082"
     networks:
-      - second_docker
+      - docker-cons
 
   product-service:
     image: product-service:latest
     container_name: product-service
-    depends_on:
-      - mysql
-      - redis
-      - eureka-server
-      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
@@ -87,16 +23,11 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - second_docker
+      - docker-cons
 
   user-service:
     image: user-service:latest
     container_name: user-service
-    depends_on:
-      - mysql
-      - redis
-      - eureka-server
-      - gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
@@ -106,11 +37,11 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - second_docker
+      - docker-cons
 
 volumes:
   mysql-data:
 
 networks:
-  second_docker:
+  docker-cons:
     driver: bridge
