@@ -9,13 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.userservice.config.AES128;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.*;
-import org.hanghae99.userservice.entity.*;
+import org.hanghae99.userservice.entity.User;
+import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.hanghae99.userservice.repository.UserRepository;
 import org.hanghae99.userservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.List;
+import java.util.Queue;
+import java.util.UUID;
 
 @Slf4j
 @Service

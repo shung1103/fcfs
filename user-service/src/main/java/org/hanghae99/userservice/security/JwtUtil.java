@@ -1,6 +1,8 @@
 package org.hanghae99.userservice.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.TokenResponse;
 import org.hanghae99.userservice.entity.UserRoleEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -108,5 +108,9 @@ public class JwtUtil {
         //현재시간
         long now = new Date().getTime();
         return (expiration.getTime()-now);
+    }
+
+    public Claims getUserInfoFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 }
