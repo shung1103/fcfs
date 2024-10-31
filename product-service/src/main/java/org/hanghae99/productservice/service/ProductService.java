@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -68,7 +69,8 @@ public class ProductService {
         productRepository.saveAndFlush(product);
 
         List<WishList> wishLists = feignOrderService.adaptGetWishListList(productNo);
-        Queue<User> userQueue = feignUserService.adaptGetUserQueue(wishLists);
+        Queue<User> userQueue = new ArrayDeque<>();
+        if (!wishLists.isEmpty()) userQueue = feignUserService.adaptGetUserQueue(wishLists);
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();
