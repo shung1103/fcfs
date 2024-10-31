@@ -13,3 +13,4 @@ public class GatewayServiceApplication {
     }
 
 }
+// Eureka 클러스터 설정을 할 경우 @EnableDiscoveryClient 추가 필요. 1번 서버에만 넣어도 유레카 서버들끼리 공유가 된다.

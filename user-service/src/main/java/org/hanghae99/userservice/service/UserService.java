@@ -87,14 +87,7 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        TokenResponse token = jwtUtil.createTokenByLogin(username, user.getRole(), secChUaPlatform, user.getPasswordVersion());
-        response.addHeader("Authorization", token.getAccessToken());
-        log.info("JWT access token : " + token.getAccessToken());
+        if(!passwordEncoder.matches(password, user.getPassword())) throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 
         return ResponseEntity.ok().body(new ApiResponseDto("로그인 성공", HttpStatus.OK.value()));
     }
