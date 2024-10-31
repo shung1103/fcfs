@@ -105,6 +105,8 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
             }
 
+            log.info(request.getHeaders().toString());
+            log.info(request.getBody().toString());
             log.info("Custom PRE filter: request uri -> {}", request.getURI());
             log.info("Custom PRE filter: request id -> {}", request.getId());
 
