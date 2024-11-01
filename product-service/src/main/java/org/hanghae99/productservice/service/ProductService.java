@@ -27,7 +27,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final JavaMailSender javaMailSender;
     private final FeignOrderService feignOrderService;
-    private final FeignUserService feignUserService;
 
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
@@ -70,7 +69,7 @@ public class ProductService {
 
         List<WishList> wishLists = feignOrderService.adaptGetWishListList(productNo);
         Queue<User> userQueue = new ArrayDeque<>();
-        if (!wishLists.isEmpty()) userQueue = feignUserService.adaptGetUserQueue(wishLists);
+        if (!wishLists.isEmpty()) userQueue = feignOrderService.adaptGetUserQueue(wishLists);
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();

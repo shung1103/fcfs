@@ -38,7 +38,6 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     // 토큰 만료시간
     private final long ACCESS_TOKEN_TIME = 60 * 30 * 1000L; // 30분
-    private static final long REFRESH_TOKEN_TIME = 1000 * 60 * 60 * 24 * 7L;// 7일
 
     // 로그 설정
     public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
@@ -90,6 +89,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             } catch (SecurityException | MalformedJwtException e) {
                 logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
             } catch (ExpiredJwtException e) {
+                log.info("JWT AccessToken ReIssue");
                 Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
                 String passwordVersion = claims.get("passwordVersion", String.class);
                 if (redisDao.hasKey(passwordVersion)) {
@@ -105,8 +105,6 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
             }
 
-            log.info(request.getHeaders().toString());
-            log.info(request.getBody().toString());
             log.info("Custom PRE filter: request uri -> {}", request.getURI());
             log.info("Custom PRE filter: request id -> {}", request.getId());
 

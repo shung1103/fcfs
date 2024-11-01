@@ -25,21 +25,21 @@ public class OrderController {
     @Transactional
     @PostMapping("/create")
     public ResponseEntity<ApiResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+        Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.createOrder(orderRequestDto, userId);
     }
 
     @Operation(summary = "나의 주문 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<List<OrderResponseDto>> getMyOrders(HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+        Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.getMyOrders(userId);
     }
 
     @Operation(summary = "주문 단건 조회")
     @GetMapping("/{orderNo}")
     public ResponseEntity<OrderResponseDto> getOneOrder(@PathVariable Long orderNo, HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+        Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return orderService.getOneOrder(orderNo, userId);
     }
 

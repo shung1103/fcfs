@@ -60,7 +60,7 @@ public class JwtUtil {
         Date date = new Date();
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
+                        .setSubject(username) // 사용자 식별자값(username)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
                         .claim("passwordVersion", passwordVersion) // 비밀번호 변경 시 모든 기기 로그아웃

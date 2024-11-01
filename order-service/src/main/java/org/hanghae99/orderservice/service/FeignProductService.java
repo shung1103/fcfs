@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@FeignClient(name = "product-service", fallbackFactory = FeignProductServiceFallbackFactory.class)
+@FeignClient(name = "gateway-service", fallbackFactory = FeignProductServiceFallbackFactory.class)
 public interface FeignProductService {
     @RequestMapping(path = "/api/product/adapt/{productId}")
     Product getProduct(@PathVariable("productId") Long productId);

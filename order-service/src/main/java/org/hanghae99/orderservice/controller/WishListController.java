@@ -25,14 +25,14 @@ public class WishListController {
     @Transactional
     @PostMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> takeItem(@PathVariable Long productNo, @RequestBody WishListRequestDto wishListRequestDto, HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+        Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return wishListService.takeItem(productNo, wishListRequestDto, userId);
     }
 
     @Operation(summary = "위시 리스트 내부 조회")
     @GetMapping("/list")
     public ResponseEntity<List<WishListResponseDto>> getWishListItems(HttpServletRequest request) {
-        long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+        Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
         return wishListService.getWishListItems(userId);
     }
 
