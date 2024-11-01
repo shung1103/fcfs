@@ -141,7 +141,7 @@ public class UserService {
         if (passwordEncoder.matches(currentPassword, user.getPassword())) {
             user.updatePassword(newPassword);
             userRepository.save(user);
-            jwtUtil.reissueAtk(user.getUsername(), user.getRole(), redisDao.getRefreshToken(user.getPasswordVersion()), request, response, user.getPasswordVersion());
+            jwtUtil.reissueAtk(userId, user.getUsername(), user.getRole(), redisDao.getRefreshToken(user.getPasswordVersion()), request, response, user.getPasswordVersion());
         } else {
             throw new IllegalArgumentException("잘못된 이전 비밀번호입니다.");
         }

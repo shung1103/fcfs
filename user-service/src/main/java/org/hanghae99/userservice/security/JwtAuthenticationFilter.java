@@ -49,9 +49,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공 및 JWT 생성");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        Long userId = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getId();
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
         String passwordVersion = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getPasswordVersion();
-        TokenResponse token = jwtUtil.createTokenByLogin(username, role, secChUaPlatform, passwordVersion);
+        TokenResponse token = jwtUtil.createTokenByLogin(userId, username, role, secChUaPlatform, passwordVersion);
         response.addHeader("Authorization", token.getAccessToken());
         log.info("JWT access token : " + token.getAccessToken());
     }

@@ -58,7 +58,7 @@ public class GoogleService {
 
         // 4. JWT 토큰 반환
         String secChUaPlatform = request.getHeader("Sec-Ch-Ua-Platform");
-        return jwtUtil.createTokenByLogin(googleUser.getUsername(), googleUser.getRole(), secChUaPlatform, googleUser.getPasswordVersion()).getAccessToken();
+        return jwtUtil.createTokenByLogin(googleUser.getId(), googleUser.getUsername(), googleUser.getRole(), secChUaPlatform, googleUser.getPasswordVersion()).getAccessToken();
     }
 
     // 애플리케이션은 인증 코드로 구글 서버에 토큰을 요청하고, 토큰을 전달 받습니다.
