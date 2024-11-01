@@ -14,6 +14,7 @@ import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.hanghae99.userservice.repository.UserRepository;
 import org.hanghae99.userservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,7 @@ import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, String> redisTemplate;
     private final RedisDao redisDao;
     private final JavaMailSender javaMailSender;
     private final AES128 aes128;
@@ -51,12 +54,6 @@ public class UserService {
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
-        }
-
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
-        } else {
-            sendMail(requestDto.getEmail());
         }
 
         // 사용자 ROLE 확인
@@ -79,6 +76,13 @@ public class UserService {
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(user));
+    }
+
+    public ResponseEntity<ApiResponseDto> checkEmail(String email) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        String encryptedEmail = aes128.encryptAes(email);
+        if (userRepository.existsByEmail(encryptedEmail)) throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+        redisTemplate.opsForValue().set(email, sendMail(email), 5, TimeUnit.MINUTES);
+        return ResponseEntity.ok().body(new ApiResponseDto("인증 번호를 전송하였습니다.", HttpStatus.CREATED.value()));
     }
 
     public ResponseEntity<ApiResponseDto> login(LoginRequestDto loginRequestDto) {
@@ -173,11 +177,18 @@ public class UserService {
         return message;
     }
 
-    public int sendMail(String mail){
+    public String sendMail(String mail){
         MimeMessage message = CreateMail(mail);
         javaMailSender.send(message);
 
-        return number;
+        return String.valueOf(number);
+    }
+
+    public void verifyNumber(String email, String number) {
+        String codeNumber = redisTemplate.opsForValue().get(email);
+        if (codeNumber == null) throw new IllegalArgumentException("인증 번호가 만료되었습니다. 다시 발급 받아 주세요");
+        if (!number.equals(codeNumber)) throw new IllegalArgumentException("잘못된 인증 번호입니다.");
+        else redisTemplate.delete(email);
     }
 
     public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {

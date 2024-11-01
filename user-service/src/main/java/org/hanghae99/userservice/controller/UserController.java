@@ -45,7 +45,14 @@ public class UserController {
             }
             throw new IllegalArgumentException("형식에 맞게 입력해주세요");
         }
+        userService.verifyNumber(signupRequestDto.getEmail(), signupRequestDto.getVerifyNumber());
         return userService.signup(signupRequestDto);
+    }
+
+    @Operation(summary = "이메일 인증 번호 전송")
+    @PostMapping("/check-email")
+    public ResponseEntity<ApiResponseDto> checkEmail(@RequestBody EmailRequestDto emailRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        return userService.checkEmail(emailRequestDto.getEmail());
     }
 
     @Operation(summary = "로그인")

@@ -30,6 +30,9 @@ public class SignupRequestDto {
     @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "유효하지 않은 이메일 주소입니다.")
     private String email;
 
+    @NotBlank(message = "이메일로 전송된 인증 번호를 입력해주세요.")
+    private String verifyNumber;
+
     private boolean admin = false;
     private String adminToken = "";
 }
