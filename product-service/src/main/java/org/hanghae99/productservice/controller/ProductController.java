@@ -23,7 +23,7 @@ public class ProductController {
     @Operation(summary = "상품 생성", description = "관리자 제한")
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto, HttpServletRequest request) {
-        if (!request.getHeader("x-claim-auth").equals("admin")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
+        if (!request.getHeader("x-claim-auth").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productRequestDto));
     }
 
@@ -48,7 +48,7 @@ public class ProductController {
     @Operation(summary = "상품 재입고")
     @PutMapping("/{productNo}/re-stock")
     public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto, HttpServletRequest request) {
-        if (!request.getHeader("x-claim-auth").equals("admin")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
+        if (!request.getHeader("x-claim-auth").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
         return ResponseEntity.status(HttpStatus.OK).body(productService.reStockProduct(productNo, reStockRequestDto));
     }
 
@@ -56,7 +56,7 @@ public class ProductController {
     @Operation(summary = "상품 정보 수정", description = "관리자 제한")
     @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long productNo, @RequestBody ProductRequestDto productRequestDto, HttpServletRequest request) {
-        if (!request.getHeader("x-claim-auth").equals("admin")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
+        if (!request.getHeader("x-claim-auth").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productNo, productRequestDto));
     }
 
@@ -64,7 +64,7 @@ public class ProductController {
     @Operation(summary = "상품 삭제", description = "관리자 제한")
     @DeleteMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> deleteProduct(@PathVariable Long productNo, HttpServletRequest request) {
-        if (!request.getHeader("x-claim-auth").equals("admin")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
+        if (!request.getHeader("x-claim-auth").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
         return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productNo));
     }
 
