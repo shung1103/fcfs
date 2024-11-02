@@ -3,10 +3,12 @@ package org.hanghae99.productservice.dto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hanghae99.productservice.entity.UserRoleEnum;
 import org.hanghae99.productservice.entity.UserSocialEnum;
 
 @Getter
+@NoArgsConstructor
 public class User {
     private Long id;
     private String username;

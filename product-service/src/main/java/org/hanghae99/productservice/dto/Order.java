@@ -1,9 +1,11 @@
 package org.hanghae99.productservice.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hanghae99.productservice.entity.TimeStamped;
 
 @Getter
+@NoArgsConstructor
 public class Order extends TimeStamped {
     private Long id;
     private Long orderUserId;
