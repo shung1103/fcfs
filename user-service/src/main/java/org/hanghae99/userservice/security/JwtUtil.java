@@ -1,8 +1,6 @@
 package org.hanghae99.userservice.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.hanghae99.userservice.config.RedisDao;
 import org.hanghae99.userservice.dto.TokenResponse;
 import org.hanghae99.userservice.entity.UserRoleEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -26,7 +26,7 @@ public class JwtUtil {
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String AUTHORIZATION_KEY = "role";
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
@@ -39,6 +39,9 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     private final RedisDao redisDao;
+
+    // 로그 설정
+    public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
 
     @PostConstruct
     public void init() {
@@ -60,7 +63,7 @@ public class JwtUtil {
         Date date = new Date();
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(username)
+                        .claim("username", username)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .claim("userid", userId)
                         .claim("platform", platform) // 다중 디바이스 로그인을 위한 플랫폼 입력
@@ -99,6 +102,23 @@ public class JwtUtil {
         String accessToken = createToken(userId, username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordVersion);
         redisDao.deleteBlackList(username);
         response.addHeader(AUTHORIZATION_HEADER, accessToken);
+    }
+
+    // 토큰 검증
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (SecurityException | MalformedJwtException e) {
+            logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+        } catch (ExpiredJwtException e) {
+            logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+        }
+        return false;
     }
 
     // 액셋스 토큰의 만료시간 조회

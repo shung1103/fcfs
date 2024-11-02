@@ -17,6 +17,10 @@ public class RedisDao {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
+    public void deleteRefreshToken(String key) {
+        redisTemplate.delete(key);
+    }
+
     public String getBlackList(String key) {
         return redisTemplate.opsForValue().get(key);
     }

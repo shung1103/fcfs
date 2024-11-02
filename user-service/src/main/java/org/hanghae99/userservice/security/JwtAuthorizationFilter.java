@@ -31,7 +31,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (token != null) {
             // 검증 후 인증 객체 생성하여 securityContextHolder에서 관리
             Claims userInfo = jwtUtil.getUserInfoFromToken(token);
-            setAuthentication(userInfo.getSubject());//subject = email
+            setAuthentication(userInfo.get("username", String.class));//subject = email
         }
         filterChain.doFilter(request, response);
     }
