@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.userservice.dto.*;
 import org.hanghae99.userservice.entity.User;
-import org.hanghae99.userservice.dto.WishList;
 import org.hanghae99.userservice.security.UserDetailsImpl;
 import org.hanghae99.userservice.service.UserService;
 import org.springframework.http.HttpStatus;

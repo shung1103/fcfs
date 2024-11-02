@@ -130,7 +130,7 @@ public class ProductService {
     }
 
     public void adaptReStockProduct(Long productNo, Integer quantity) {
-        Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        Product product = productRepository.findProductById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         product.reStock(quantity);
         productRepository.saveAndFlush(product);
     }
