@@ -1,9 +1,9 @@
-package org.hanghae99.orderservice.config;
+package org.hanghae99.orderservice.exception;
 
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
 import org.hanghae99.orderservice.dto.Product;
-import org.hanghae99.orderservice.service.FeignProductService;
+import org.hanghae99.orderservice.client.FeignProductService;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 

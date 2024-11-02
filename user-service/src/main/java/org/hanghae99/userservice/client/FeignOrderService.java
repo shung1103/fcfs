@@ -1,4 +1,4 @@
-package org.hanghae99.userservice.service;
+package org.hanghae99.userservice.client;
 
 import org.hanghae99.userservice.dto.OrderResponseDto;
 import org.hanghae99.userservice.dto.WishListResponseDto;

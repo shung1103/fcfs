@@ -1,6 +1,6 @@
-package org.hanghae99.productservice.service;
+package org.hanghae99.productservice.client;
 
-import org.hanghae99.productservice.config.FeignOrderServiceFallbackFactory;
+import org.hanghae99.productservice.exception.FeignOrderServiceFallbackFactory;
 import org.hanghae99.productservice.dto.User;
 import org.hanghae99.productservice.dto.WishList;
 import org.springframework.cloud.openfeign.FeignClient;

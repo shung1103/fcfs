@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hanghae99.productservice.client.FeignOrderService;
 import org.hanghae99.productservice.dto.*;
 import org.hanghae99.productservice.dto.Order;
 import org.hanghae99.productservice.entity.Product;

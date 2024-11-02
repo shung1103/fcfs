@@ -1,6 +1,7 @@
 package org.hanghae99.orderservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hanghae99.orderservice.client.FeignProductService;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.WishListRequestDto;
 import org.hanghae99.orderservice.dto.WishListResponseDto;

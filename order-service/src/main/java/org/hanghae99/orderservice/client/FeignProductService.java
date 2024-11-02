@@ -1,6 +1,6 @@
-package org.hanghae99.orderservice.service;
+package org.hanghae99.orderservice.client;
 
-import org.hanghae99.orderservice.config.FeignProductServiceFallbackFactory;
+import org.hanghae99.orderservice.exception.FeignProductServiceFallbackFactory;
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
 import org.hanghae99.orderservice.dto.Product;
