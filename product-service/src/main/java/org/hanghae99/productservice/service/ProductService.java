@@ -74,7 +74,7 @@ public class ProductService {
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();
-            sendMail(user.getEmail());
+            sendReStockMail(user.getEmail(), product.getTitle());
         }
 
         return new ProductResponseDto(product);
@@ -95,22 +95,14 @@ public class ProductService {
         return new ApiResponseDto("상품 삭제", HttpStatus.OK.value());
     }
 
-    public static void createNumber(){
-        //인증번호 만들기
-        number = (int)(Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
-    }
-
-    public MimeMessage CreateMail(String mail){
-        createNumber();
+    public MimeMessage CreateReStockMail(String mail, String title) {
         MimeMessage message = javaMailSender.createMimeMessage();
-
         try {
             message.setFrom(senderEmail);
             message.setRecipients(MimeMessage.RecipientType.TO, mail);
-            message.setSubject("이메일 인증");
+            message.setSubject("상품 재입고 알림");
             String body = "";
-            body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
-            body += "<h1>" + number + "</h1>";
+            body += "<h3>위시 리스트에 등록하신 " + title + " 이 재입고되었습니다.</h3>";
             body += "<h3>" + "감사합니다." + "</h3>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
@@ -119,11 +111,9 @@ public class ProductService {
         return message;
     }
 
-    public int sendMail(String mail){
-        MimeMessage message = CreateMail(mail);
-        javaMailSender.send(message);
-
-        return number;
+    public void sendReStockMail (String mail, String title) {
+        MimeMessage reStockMessage = CreateReStockMail(mail, title);
+        javaMailSender.send(reStockMessage);
     }
 
     public Product adaptGetProductNo(Long productNo) {
