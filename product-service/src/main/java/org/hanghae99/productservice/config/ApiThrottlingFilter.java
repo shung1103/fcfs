@@ -17,15 +17,12 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ApiThrottlingFilter implements Filter {
-    public static final String THROTTLING_KEY = "throttling";
-    private static final Duration DEFAULT_THROTTLING = Duration.ofSeconds(30);
-
     private static final String STOP_REQUEST = "There is No Token Anymore";
     private static final List<String> GREEDY_API = List.of();
     private static final List<String> INTERVAL_API = List.of("/api/product/{productNo}/re-stock");
 
     // Greedy Refill Bucket : duration/refill 초마다 1개의 토큰을 추가
-    private static final Bucket greedyBucket = createGreedyBucket(3, 3, Duration.ofSeconds(9));
+    private static final Bucket greedyBucket = createGreedyBucket(3, 3, Duration.ofSeconds(3));
     // Interval Refill Bucket : duration 마다 refill 갯수 만큼 한번에 추가
     private static final Bucket intervalBucket = createIntervalBucket(1000, 1000, Duration.ofSeconds(1));
 
