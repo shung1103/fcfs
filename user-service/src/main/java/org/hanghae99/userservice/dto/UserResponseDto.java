@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hanghae99.userservice.entity.User;
 import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.hanghae99.userservice.entity.UserSocialEnum;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Getter
 @NoArgsConstructor
@@ -18,10 +17,9 @@ public class UserResponseDto {
     private String phone;
     private UserRoleEnum role;
     private UserSocialEnum social;
-    private List<WishListResponseDto> wishList;
-    private List<OrderResponseDto> orderList;
+    private Page<OrderResponseDto> orderList;
 
-    public UserResponseDto(User user, String email, String realName, String address, String phone, List<WishListResponseDto> wishList, List<OrderResponseDto> orderList) {
+    public UserResponseDto(User user, String email, String realName, String address, String phone, Page<OrderResponseDto> orderList) {
         this.username = user.getUsername();
         this.email = email;
         this.realName = realName;
@@ -29,7 +27,6 @@ public class UserResponseDto {
         this.phone = phone;
         this.role = user.getRole();
         this.social = user.getSocial();
-        this.wishList = wishList;
         this.orderList = orderList;
     }
 

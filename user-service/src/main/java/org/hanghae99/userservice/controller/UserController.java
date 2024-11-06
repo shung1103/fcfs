@@ -77,8 +77,10 @@ public class UserController {
     @Transactional
     @Operation(summary = "프로필 조회")
     @GetMapping("/profile")
-    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails.getUser().getId()));
+    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "5") int size) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userDetails.getUser().getId(), page, size));
     }
 
     @Operation(summary = "프로필 수정")

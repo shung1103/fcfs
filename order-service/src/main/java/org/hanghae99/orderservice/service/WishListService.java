@@ -3,9 +3,9 @@ package org.hanghae99.orderservice.service;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.client.FeignProductService;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
+import org.hanghae99.orderservice.dto.Product;
 import org.hanghae99.orderservice.dto.WishListRequestDto;
 import org.hanghae99.orderservice.dto.WishListResponseDto;
-import org.hanghae99.orderservice.dto.Product;
 import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.repository.WishListRepository;
 import org.springframework.http.HttpStatus;
@@ -62,12 +62,5 @@ public class WishListService {
     public List<WishList> adaptGetWishListList(Long productId) {
         Product product = feignProductService.getProduct(productId);
         return wishListRepository.findAllByWishProductId(product.getId());
-    }
-
-    public List<WishListResponseDto> adaptGetWishListResponseDtoList(Long userID) {
-        List<WishList> wishLists = wishListRepository.findAllByWishUserId(userID);
-        List<WishListResponseDto> wishListResponseDtoList = new ArrayList<>();
-        for (WishList wishList : wishLists) wishListResponseDtoList.add(new WishListResponseDto(wishList));
-        return wishListResponseDtoList;
     }
 }

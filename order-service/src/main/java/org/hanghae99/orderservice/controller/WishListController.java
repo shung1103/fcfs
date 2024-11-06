@@ -55,10 +55,4 @@ public class WishListController {
     public List<WishList> adaptGetWishListList(@PathVariable Long productId) {
         return wishListService.adaptGetWishListList(productId);
     }
-
-    @Operation(summary = "Eureka 유저 이름에 맞는 위시 리스트 목록 조회")
-    @GetMapping("/adapt/wishListResponseDtoList/{userID}")
-    public List<WishListResponseDto> adaptGetWishListResponseDtoList(@PathVariable Long userID) {
-        return wishListService.adaptGetWishListResponseDtoList(userID);
-    }
 }

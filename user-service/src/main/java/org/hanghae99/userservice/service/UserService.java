@@ -15,6 +15,10 @@ import org.hanghae99.userservice.entity.UserRoleEnum;
 import org.hanghae99.userservice.repository.UserRepository;
 import org.hanghae99.userservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,18 +118,21 @@ public class UserService {
         }
     }
 
-    public UserResponseDto getUser(Long id) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public UserResponseDto getUser(Long id, int page, int size) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<WishListResponseDto> wishListResponseDtoList = feignOrderService.adaptGetWishLists(id);
         List<OrderResponseDto> orderResponseDtoList = feignOrderService.adaptGetOrders(user.getId());
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), orderResponseDtoList.size());
+        Page<OrderResponseDto> orderResponseDtoPage = new PageImpl<>(orderResponseDtoList.subList(start, end), pageable, orderResponseDtoList.size());
 
         String email = aes128.decryptAes(user.getEmail());
         String realName = aes128.decryptAes(user.getRealName());
         String address = aes128.decryptAes(user.getAddress());
         String phone = aes128.decryptAes(user.getPhone());
 
-        return new UserResponseDto(user, email, realName, address, phone, wishListResponseDtoList, orderResponseDtoList);
+        return new UserResponseDto(user, email, realName, address, phone, orderResponseDtoPage);
     }
 
     public UserResponseDto updateUser(Long userId, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
