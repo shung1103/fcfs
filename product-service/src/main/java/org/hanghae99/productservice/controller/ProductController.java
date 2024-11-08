@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hanghae99.productservice.dto.*;
+import org.hanghae99.productservice.dto.ApiResponseDto;
+import org.hanghae99.productservice.dto.ProductRequestDto;
+import org.hanghae99.productservice.dto.ProductResponseDto;
+import org.hanghae99.productservice.dto.ReStockRequestDto;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -45,7 +48,7 @@ public class ProductController {
         return productService.getProductStock(productNo);
     }
 
-    @Operation(summary = "상품 재입고")
+    @Operation(summary = "상품 재입고", description = "관리자 제한")
     @PutMapping("/{productNo}/re-stock")
     public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto, HttpServletRequest request) {
         if (!request.getHeader("x-claim-role").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
@@ -69,20 +72,15 @@ public class ProductController {
     }
 
     @Operation(summary = "Eureka 상품 단건 조회")
-    @GetMapping("/adapt/{productNo}")
-    public Product adaptGetProductNo(@PathVariable Long productNo) {
-        return productService.adaptGetProductNo(productNo);
+    @GetMapping("/adapt/{productId}")
+    public Product adaptGetProductNo(@PathVariable("productId") Long productId) {
+        return productService.adaptGetProductNo(productId);
     }
 
+    @Transactional
     @Operation(summary = "Eureka 상품 재입고")
-    @PutMapping("/adapt/{productNo}/re-stock/{quantity}")
-    public void adaptReStockProduct(@PathVariable Long productNo, @PathVariable Integer quantity) {
-        productService.adaptReStockProduct(productNo, quantity);
-    }
-
-    @Operation(summary = "Eureka orderResponseDtoList 출력")
-    @GetMapping("/adapt/{userId}/dtoList")
-    public List<OrderResponseDto> adaptGetDtoList(@PathVariable Long userId, List<Order> orderList) {
-        return productService.adaptGetDtoList(userId, orderList);
+    @PutMapping("/adapt/{productId}/re-stock")
+    public void adaptReStockProduct(@PathVariable("productId") Long productId, @RequestParam("quantity") Integer quantity) {
+        productService.adaptReStockProduct(productId, quantity);
     }
 }

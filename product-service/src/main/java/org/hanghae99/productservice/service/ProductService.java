@@ -6,10 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.productservice.client.FeignOrderService;
 import org.hanghae99.productservice.dto.*;
-import org.hanghae99.productservice.dto.Order;
 import org.hanghae99.productservice.entity.Product;
-import org.hanghae99.productservice.dto.User;
-import org.hanghae99.productservice.dto.WishList;
 import org.hanghae99.productservice.repository.ProductRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -69,8 +66,12 @@ public class ProductService {
         productRepository.saveAndFlush(product);
 
         List<WishList> wishLists = feignOrderService.adaptGetWishListList(productNo);
+
+        List<Long> wishUserIdList = new ArrayList<>();
+        for (WishList wishList : wishLists) wishUserIdList.add(wishList.getWishUserId());
+
         Queue<User> userQueue = new ArrayDeque<>();
-        if (!wishLists.isEmpty()) userQueue = feignOrderService.adaptGetUserQueue(wishLists);
+        if (!wishLists.isEmpty()) userQueue = feignOrderService.adaptGetUserQueue(wishUserIdList);
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();
@@ -124,14 +125,5 @@ public class ProductService {
         Product product = productRepository.findProductById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         product.reStock(quantity);
         productRepository.saveAndFlush(product);
-    }
-
-    public List<OrderResponseDto> adaptGetDtoList(Long userId, List<Order> orderList) {
-        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
-        for (Order order : orderList) {
-            Product product = productRepository.findById(order.getOrderProductId()).orElseThrow(() -> new NullPointerException("Product not found"));
-            orderResponseDtoList.add(new OrderResponseDto(userId, product.getTitle(), order));
-        }
-        return orderResponseDtoList;
     }
 }

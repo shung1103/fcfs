@@ -20,7 +20,7 @@ public class FeignOrderServiceFallbackFactory implements FallbackFactory<FeignOr
             }
 
             @Override
-            public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {
+            public Queue<User> adaptGetUserQueue(List<Long> wishUserIdList) {
                 return new LinkedList<>();
             }
         };

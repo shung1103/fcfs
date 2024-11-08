@@ -199,11 +199,11 @@ public class UserService {
         else redisTemplate.delete(email);
     }
 
-    public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {
+    public Queue<User> adaptGetUserQueue(List<Long> wishUserIdList) {
         Queue<User> userQueue = new ArrayDeque<>();
 
-        for (WishList wishList : wishLists) {
-            User user = userRepository.findById(wishList.getWishUserId()).orElseThrow(() -> new NullPointerException("User not found"));
+        for (Long wishUserId : wishUserIdList) {
+            User user = userRepository.findById(wishUserId).orElseThrow(() -> new NullPointerException("User not found"));
             userQueue.offer(user);
         }
         return userQueue;

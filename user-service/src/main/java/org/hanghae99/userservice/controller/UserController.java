@@ -98,8 +98,8 @@ public class UserController {
 
     @Operation(summary = "Eureka 위시 리스트 유저 리스트")
     @GetMapping("/adapt/wishLists")
-    public Queue<User> adaptGetUserQueue(List<WishList> wishLists) {
-        return userService.adaptGetUserQueue(wishLists);
+    public Queue<User> adaptGetUserQueue(@RequestParam("wishLists") List<Long> wishUserIdList) {
+        return userService.adaptGetUserQueue(wishUserIdList);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})

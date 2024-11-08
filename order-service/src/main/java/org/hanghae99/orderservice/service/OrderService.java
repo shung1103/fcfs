@@ -5,8 +5,8 @@ import org.hanghae99.orderservice.client.FeignProductService;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
 import org.hanghae99.orderservice.dto.OrderRequestDto;
 import org.hanghae99.orderservice.dto.OrderResponseDto;
-import org.hanghae99.orderservice.entity.Order;
 import org.hanghae99.orderservice.dto.Product;
+import org.hanghae99.orderservice.entity.Order;
 import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.repository.OrderRepository;
 import org.hanghae99.orderservice.repository.WishListRepository;
@@ -52,7 +52,7 @@ public class OrderService {
     public ResponseEntity<List<OrderResponseDto>> getMyOrders(Long userId) {
         List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(userId);
         if (orderList.isEmpty()) {
-            throw new NullPointerException("주문이 없습니다.");
+            return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
         } else {
             List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
             for (Order order : orderList) {
@@ -119,6 +119,14 @@ public class OrderService {
     public List<OrderResponseDto> adaptGetOrders(Long userId) {
         List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(userId);
         if (orderList.isEmpty()) return new ArrayList<>();
-        return feignProductService.adaptGetDtoList(userId, orderList);
+
+        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
+        for (Order order : orderList) {
+            Product product = feignProductService.getProduct(order.getOrderProductId());
+            OrderResponseDto orderResponseDto = new OrderResponseDto(userId, product.getTitle(), order);
+            orderResponseDtoList.add(orderResponseDto);
+        }
+
+        return orderResponseDtoList;
     }
 }

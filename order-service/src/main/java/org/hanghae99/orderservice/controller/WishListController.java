@@ -52,7 +52,7 @@ public class WishListController {
 
     @Operation(summary = "Eureka 위시 리스트 목록 조회")
     @GetMapping("/adapt/wishListList/{productId}")
-    public List<WishList> adaptGetWishListList(@PathVariable Long productId) {
+    public List<WishList> adaptGetWishListList(@PathVariable("productId") Long productId) {
         return wishListService.adaptGetWishListList(productId);
     }
 }

@@ -59,7 +59,7 @@ public class OrderController {
 
     @Operation(summary = "Eureka 유저 주문 목록 조회")
     @GetMapping("/adapt/{userId}/orders")
-    public List<OrderResponseDto> adaptGetOrders(@PathVariable Long userId) {
+    public List<OrderResponseDto> adaptGetOrders(@PathVariable("userId") Long userId) {
         return orderService.adaptGetOrders(userId);
     }
 }
