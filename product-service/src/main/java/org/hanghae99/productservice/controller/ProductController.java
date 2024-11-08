@@ -14,6 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.List;
 
 @RestController
@@ -50,7 +54,7 @@ public class ProductController {
 
     @Operation(summary = "상품 재입고", description = "관리자 제한")
     @PutMapping("/{productNo}/re-stock")
-    public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto, HttpServletRequest request) {
+    public ResponseEntity<ProductResponseDto> reStockProduct(@PathVariable Long productNo, @RequestBody ReStockRequestDto reStockRequestDto, HttpServletRequest request) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         if (!request.getHeader("x-claim-role").equals("ADMIN")) throw new IllegalArgumentException("관리자 권한이 아닙니다.");
         return ResponseEntity.status(HttpStatus.OK).body(productService.reStockProduct(productNo, reStockRequestDto));
     }

@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.productservice.client.FeignOrderService;
+import org.hanghae99.productservice.config.AES128;
 import org.hanghae99.productservice.dto.*;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.repository.ProductRepository;
@@ -14,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final JavaMailSender javaMailSender;
     private final FeignOrderService feignOrderService;
+    private final AES128 aes128;
 
     private static final String senderEmail= "hoooly1103@gmail.com";
     private static int number;
@@ -59,7 +65,7 @@ public class ProductService {
     }
 
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
-    public ProductResponseDto reStockProduct(Long productNo, ReStockRequestDto reStockRequestDto) {
+    public ProductResponseDto reStockProduct(Long productNo, ReStockRequestDto reStockRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
         int newStock = product.getStock() + reStockRequestDto.getReStockQuantity();
         product.reStock(newStock);
@@ -75,7 +81,8 @@ public class ProductService {
 
         while (!userQueue.isEmpty()) {
             User user = userQueue.poll();
-            sendReStockMail(user.getEmail(), product.getTitle());
+            String email = aes128.decryptAes(user.getEmail());
+            sendReStockMail(email, product.getTitle());
         }
 
         return new ProductResponseDto(product);
