@@ -7,7 +7,9 @@ import org.hanghae99.orderservice.dto.OrderRequestDto;
 import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.entity.Order;
 import org.hanghae99.orderservice.dto.Product;
+import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.repository.OrderRepository;
+import org.hanghae99.orderservice.repository.WishListRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+    private final WishListRepository wishListRepository;
     private final OrderRepository orderRepository;
     private final FeignProductService feignProductService;
 
@@ -36,6 +39,10 @@ public class OrderService {
             Order order = new Order(userId, product.getId(), orderRequestDto);
             feignProductService.reStockProduct(product.getId(), product.getStock() - orderRequestDto.getQuantity());
             orderRepository.save(order);
+            if (wishListRepository.existsByWishUserIdAndWishProductId(userId, product.getId())) {
+                WishList wishList = wishListRepository.findByWishUserIdAndWishProductId(userId, product.getId());
+                wishListRepository.delete(wishList);
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("주문이 완료 되었습니다.", HttpStatus.CREATED.value()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto("금액을 올바르게 입력해 주세요.", HttpStatus.BAD_REQUEST.value()));

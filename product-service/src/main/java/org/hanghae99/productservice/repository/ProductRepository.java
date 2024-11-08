@@ -13,6 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByTitle(@NotBlank String title);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from Product p where p.id = :product_id")
+    @Query("select p from Product p where p.id = :id")
     Optional<Product> findProductById(Long id);
 }

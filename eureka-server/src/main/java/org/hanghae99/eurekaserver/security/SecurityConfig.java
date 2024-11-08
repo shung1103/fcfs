@@ -40,7 +40,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user1 = User.builder()
                 .username("admin")
-                .password(bCryptPasswordEncoder().encode("qwer1234"))
+                .password(bCryptPasswordEncoder().encode("1234"))
                 .roles("ADMIN")
                 .build();
 

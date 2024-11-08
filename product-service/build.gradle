@@ -14,8 +14,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Spring Batch
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
-    testImplementation 'org.springframework.batch:spring-batch-test'
+//    implementation 'org.springframework.boot:spring-boot-starter-batch'
+//    testImplementation 'org.springframework.batch:spring-batch-test'
 
     // Circuit Breaker Resilience4j
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
