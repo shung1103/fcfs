@@ -101,6 +101,8 @@ public class OrderService {
                         int newStock = product.getStock() + order.getOrderQuantity();
                         feignProductService.reStockProduct(product.getId(), newStock);
                     }
+                case "반품 완료":
+                    continue;
                 default:
                     throw new RuntimeException();
             }

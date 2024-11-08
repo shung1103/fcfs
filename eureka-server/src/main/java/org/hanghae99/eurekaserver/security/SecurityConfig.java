@@ -19,7 +19,6 @@ public class SecurityConfig {
     // 인코딩
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -41,7 +40,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user1 = User.builder()
                 .username("admin")
-                .password(bCryptPasswordEncoder().encode("1234"))
+                .password(bCryptPasswordEncoder().encode("qwer1234"))
                 .roles("ADMIN")
                 .build();
 
