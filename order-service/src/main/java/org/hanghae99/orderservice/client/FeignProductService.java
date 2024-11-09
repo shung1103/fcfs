@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @FeignClient(name = "gateway-service", fallbackFactory = FeignProductServiceFallbackFactory.class)
 public interface FeignProductService {
     @GetMapping("/api/product/adapt/{productId}")
@@ -14,4 +16,7 @@ public interface FeignProductService {
 
     @PutMapping("/api/product/adapt/{productId}/re-stock")
     void reStockProduct(@PathVariable("productId") Long productId, @RequestParam("quantity") Integer quantity);
+
+    @GetMapping("/api/product/adapt/product-list")
+    List<Product> getAdaptProductList(@RequestParam("productIds") List<Long> productIds);
 }

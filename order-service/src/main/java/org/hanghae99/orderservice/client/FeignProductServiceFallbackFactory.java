@@ -20,6 +20,11 @@ public class FeignProductServiceFallbackFactory implements FallbackFactory<Feign
 
             @Override
             public void reStockProduct(Long productId, Integer quantity) {}
+
+            @Override
+            public List<Product> getAdaptProductList(List<Long> productIds) {
+                return List.of();
+            }
         };
     }
 }

@@ -87,4 +87,10 @@ public class ProductController {
     public void adaptReStockProduct(@PathVariable("productId") Long productId, @RequestParam("quantity") Integer quantity) {
         productService.adaptReStockProduct(productId, quantity);
     }
+
+    @Operation(summary = "Eureka 상품 목록 조회")
+    @GetMapping("/adapt/product-list")
+    public List<Product> getAdaptProductList(@RequestParam("productIds") List<Long> productIds) {
+        return productService.getAdaptProductList(productIds);
+    }
 }

@@ -120,10 +120,13 @@ public class OrderService {
         List<Order> orderList = orderRepository.findAllByOrderUserIdOrderByCreatedAtDesc(userId);
         if (orderList.isEmpty()) return new ArrayList<>();
 
+        List<Long> productIds = new ArrayList<>();
+        for (Order order : orderList) productIds.add(order.getOrderProductId());
+        List<Product> productList = feignProductService.getAdaptProductList(productIds);
+
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
-        for (Order order : orderList) {
-            Product product = feignProductService.getProduct(order.getOrderProductId());
-            OrderResponseDto orderResponseDto = new OrderResponseDto(userId, product.getTitle(), order);
+        for (int i = 0; i < orderList.size(); i++) {
+            OrderResponseDto orderResponseDto = new OrderResponseDto(userId, productList.get(i).getTitle(), orderList.get(i));
             orderResponseDtoList.add(orderResponseDto);
         }
 

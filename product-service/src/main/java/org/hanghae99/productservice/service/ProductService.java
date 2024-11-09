@@ -133,4 +133,13 @@ public class ProductService {
         product.reStock(quantity);
         productRepository.saveAndFlush(product);
     }
+
+    public List<Product> getAdaptProductList(List<Long> productIds) {
+        List<Product> productList = new ArrayList<>();
+        for (Long productId : productIds) {
+            Product product = productRepository.findById(productId).orElseThrow(() -> new NullPointerException("Product not found"));
+            productList.add(product);
+        }
+        return productList;
+    }
 }
