@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
@@ -120,6 +121,7 @@ public class ProductService {
         return message;
     }
 
+    @Async
     public void sendReStockMail (String mail, String title) {
         MimeMessage reStockMessage = CreateReStockMail(mail, title);
         javaMailSender.send(reStockMessage);
