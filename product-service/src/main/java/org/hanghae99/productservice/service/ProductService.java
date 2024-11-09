@@ -11,6 +11,9 @@ import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.repository.ProductRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -45,11 +48,9 @@ public class ProductService {
 
     @Transactional
     @Cacheable(value = "Products", cacheManager = "productCacheManager")
-    public List<ProductResponseDto> getProducts() {
-        List<Product> products = productRepository.findAll();
-        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
-        for (Product product : products) productResponseDtos.add(new ProductResponseDto(product));
-        return productResponseDtos;
+    public Page<ProductResponseDto> getProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAll(pageable).map(ProductResponseDto::new);
     }
 
     public ProductResponseDto getProduct(Long productNo) {
