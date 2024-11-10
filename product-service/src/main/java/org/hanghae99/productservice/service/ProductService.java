@@ -35,9 +35,7 @@ public class ProductService {
     private final JavaMailSender javaMailSender;
     private final FeignOrderService feignOrderService;
     private final AES128 aes128;
-
     private static final String senderEmail= "hoooly1103@gmail.com";
-    private static int number;
 
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
@@ -133,7 +131,7 @@ public class ProductService {
 
     public void adaptReStockProduct(Long productNo, Integer quantity) {
         Product product = productRepository.findProductById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
-        product.reStock(quantity);
+        product.reStock(product.getStock() - quantity);
         productRepository.saveAndFlush(product);
     }
 

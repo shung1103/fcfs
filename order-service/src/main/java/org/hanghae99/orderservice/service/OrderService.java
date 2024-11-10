@@ -37,7 +37,7 @@ public class OrderService {
         long totalPrice = product.getPrice() * orderRequestDto.getQuantity();
         if (orderRequestDto.getPayment().equals(totalPrice)) {
             Order order = new Order(userId, product.getId(), orderRequestDto);
-            feignProductService.reStockProduct(product.getId(), product.getStock() - orderRequestDto.getQuantity());
+            feignProductService.reStockProduct(product.getId(), orderRequestDto.getQuantity());
             orderRepository.save(order);
             if (wishListRepository.existsByWishUserIdAndWishProductId(userId, product.getId())) {
                 WishList wishList = wishListRepository.findByWishUserIdAndWishProductId(userId, product.getId());
