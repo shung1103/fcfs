@@ -22,7 +22,6 @@ public class OrderController {
     private final OrderService orderService;
 
     @Operation(summary = "상품 결제 및 주문 생성")
-    @Transactional
     @PostMapping("/create")
     public ResponseEntity<ApiResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, HttpServletRequest request) {
         Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
@@ -44,7 +43,6 @@ public class OrderController {
     }
 
     @Operation(summary = "주문 취소")
-    @Transactional
     @PutMapping("/{orderNo}")
     public ResponseEntity<ApiResponseDto> cancelOrder(@PathVariable Long orderNo) {
         return orderService.cancelOrder(orderNo);

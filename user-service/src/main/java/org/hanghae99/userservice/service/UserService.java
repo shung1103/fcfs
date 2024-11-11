@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hanghae99.userservice.client.FeignOrderService;
@@ -56,6 +57,7 @@ public class UserService {
     @Value("${ADMIN_TOKEN}")
     private String ADMIN_TOKEN;
 
+    @Transactional
     public ResponseEntity<UserResponseDto> signup(SignupRequestDto requestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다.");
@@ -118,6 +120,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public UserResponseDto getUser(Long id, int page, int size) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         Pageable pageable = PageRequest.of(page, size);
@@ -135,6 +138,7 @@ public class UserService {
         return new UserResponseDto(user, email, realName, address, phone, orderResponseDtoPage);
     }
 
+    @Transactional
     public UserResponseDto updateUser(Long userId, UserRequestDto userRequestDto) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
         String email = aes128.encryptAes(userRequestDto.getEmail());
@@ -145,6 +149,7 @@ public class UserService {
         return new UserResponseDto(userRepository.save(user));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponseDto> updatePassword(Long userId, PasswordRequestDto passwordRequestDto, HttpServletRequest request, HttpServletResponse response) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
         String currentPassword = passwordRequestDto.getCurrentPassword();

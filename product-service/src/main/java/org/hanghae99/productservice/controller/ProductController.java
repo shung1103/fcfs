@@ -27,7 +27,6 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @Transactional
     @Operation(summary = "상품 생성", description = "관리자 제한")
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto, HttpServletRequest request) {
@@ -60,7 +59,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.reStockProduct(productNo, reStockRequestDto));
     }
 
-    @Transactional
     @Operation(summary = "상품 정보 수정", description = "관리자 제한")
     @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long productNo, @RequestBody ProductRequestDto productRequestDto, HttpServletRequest request) {
@@ -68,7 +66,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productNo, productRequestDto));
     }
 
-    @Transactional
     @Operation(summary = "상품 삭제", description = "관리자 제한")
     @DeleteMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> deleteProduct(@PathVariable Long productNo, HttpServletRequest request) {
@@ -82,7 +79,6 @@ public class ProductController {
         return productService.adaptGetProductNo(productId);
     }
 
-    @Transactional
     @Operation(summary = "Eureka 상품 재입고")
     @PutMapping("/adapt/{productId}/re-stock")
     public void adaptReStockProduct(@PathVariable("productId") Long productId, @RequestParam("quantity") Integer quantity) {

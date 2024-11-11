@@ -37,6 +37,7 @@ public class ProductService {
     private final AES128 aes128;
     private static final String senderEmail= "hoooly1103@gmail.com";
 
+    @Transactional
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
         if (productRepository.existsByTitle(productRequestDto.getTitle())) throw new IllegalArgumentException("중복된 상품명이 존재합니다.");
@@ -88,6 +89,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ProductResponseDto updateProduct(Long productNo, ProductRequestDto productRequestDto) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
@@ -96,6 +98,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional
     @CacheEvict(value = "Products", allEntries = true, cacheManager = "productCacheManager")
     public ApiResponseDto deleteProduct(Long productNo) {
         Product product = productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
@@ -129,8 +132,10 @@ public class ProductService {
         return productRepository.findById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
     }
 
+    @Transactional
     public void adaptReStockProduct(Long productNo, Integer quantity) {
         Product product = productRepository.findProductById(productNo).orElseThrow(() -> new NullPointerException("Product not found"));
+        if (product.getStock() < quantity) throw new IllegalArgumentException("재고 부족");
         product.reStock(product.getStock() - quantity);
         productRepository.saveAndFlush(product);
     }

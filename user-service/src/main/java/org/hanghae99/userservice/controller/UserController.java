@@ -32,7 +32,6 @@ import java.util.Queue;
 public class UserController {
     private final UserService userService;
 
-    @Transactional
     @Operation(summary = "회원 가입")
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult) throws InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
@@ -74,7 +73,6 @@ public class UserController {
         return ResponseEntity.ok().body(new ApiResponseDto("로그 아웃 완료", HttpStatus.OK.value()));
     }
 
-    @Transactional
     @Operation(summary = "프로필 조회")
     @GetMapping("/profile")
     public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -89,7 +87,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUser().getId(), userRequestDto));
     }
 
-    @Transactional
     @Operation(summary = "비밀번호 수정", description = "등록된 모든 기기에서 로그아웃")
     @PutMapping("/update-password")
     public ResponseEntity<ApiResponseDto> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto, HttpServletRequest request, HttpServletResponse response) {

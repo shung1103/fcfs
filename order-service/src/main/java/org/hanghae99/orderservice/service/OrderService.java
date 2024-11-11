@@ -1,5 +1,6 @@
 package org.hanghae99.orderservice.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.client.FeignProductService;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
@@ -26,6 +27,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final FeignProductService feignProductService;
 
+    @Transactional
     public ResponseEntity<ApiResponseDto> createOrder(OrderRequestDto orderRequestDto, Long userId) {
         Product product = feignProductService.getProduct(orderRequestDto.getProductId());
 
@@ -70,6 +72,7 @@ public class OrderService {
         return ResponseEntity.status(HttpStatus.OK).body(new OrderResponseDto(userId, product.getTitle(), order));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponseDto> cancelOrder(Long orderNo) {
         Order order = orderRepository.findById(orderNo).orElseThrow(() -> new NullPointerException("존재하지 않는 주문 번호입니다."));
 
