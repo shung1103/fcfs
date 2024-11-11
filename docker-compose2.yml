@@ -17,6 +17,11 @@ services:
       - "--collation-server=utf8mb4_unicode_ci"
     networks:
       - docker-cons
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
 
   redis:
     image: redis
@@ -31,6 +36,11 @@ services:
       unless-stopped
     networks:
       - docker-cons
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
 
   eureka-server:
     image: eureka-server:latest
