@@ -73,43 +73,38 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 if (blackList.equals("logout")) throw new IllegalArgumentException("Please Login again.");
             }
 
-            try {
-                Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-
-                log.info("JWT Claims: ");
-                ServerHttpRequest.Builder mutatedRequest = request.mutate();
-                for (Map.Entry<String, Object> entry : claims.entrySet()) {
-                    String claimKey = "X-Claim-" + entry.getKey();
-                    String claimValue = String.valueOf(entry.getValue());
-                    mutatedRequest.header(claimKey, claimValue);
-                    log.info("{}: {}", claimKey, claimValue);
-                }
-
-                request = mutatedRequest.build();
-                exchange = exchange.mutate().request(request).build();
-
-            } catch (SecurityException | MalformedJwtException e) {
-                logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-            } catch (ExpiredJwtException e) {
-                log.info("토큰 만료. 리프레쉬 토큰 확인");
-                Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims;
+            if (validateToken(token)) {
+                claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            } else {
+                log.info("액세스 토큰 만료. 리프레쉬 토큰 확인");
+                claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
                 String passwordVersion = claims.get("passwordVersion", String.class);
-                if (redisDao.hasKey(passwordVersion) && validateToken(redisDao.getRefreshToken(passwordVersion))) {
+                if (redisDao.hasKey(passwordVersion)) {
                     String username = claims.get("username", String.class);
                     UserRoleEnum role = UserRoleEnum.valueOf(claims.get("auth", String.class));
                     Long userId = Long.parseLong(claims.get("userid", String.class));
                     String secChUaPlatform = claims.get("platform", String.class);
                     String accessToken = createToken(userId, username, role, ACCESS_TOKEN_TIME, secChUaPlatform, passwordVersion);
                     response.getHeaders().add(HttpHeaders.AUTHORIZATION, accessToken);
+                    claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
                 } else {
-                    logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+                    logger.error("비밀번호 변경으로 만료된 JWT token 입니다.");
                     redisDao.deleteRefreshToken(passwordVersion);
                 }
-            } catch (UnsupportedJwtException e) {
-                logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-            } catch (IllegalArgumentException e) {
-                logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
             }
+
+            log.info("JWT Claims: ");
+            ServerHttpRequest.Builder mutatedRequest = request.mutate();
+            for (Map.Entry<String, Object> entry : claims.entrySet()) {
+                String claimKey = "X-Claim-" + entry.getKey();
+                String claimValue = String.valueOf(entry.getValue());
+                mutatedRequest.header(claimKey, claimValue);
+                log.info("{}: {}", claimKey, claimValue);
+            }
+
+            request = mutatedRequest.build();
+            exchange = exchange.mutate().request(request).build();
 
             log.info("Custom PRE filter: request uri -> {}", request.getURI());
             log.info("Custom PRE filter: request id -> {}", request.getId());
