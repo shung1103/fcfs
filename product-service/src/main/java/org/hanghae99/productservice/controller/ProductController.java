@@ -2,15 +2,14 @@ package org.hanghae99.productservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hanghae99.productservice.config.RestPage;
 import org.hanghae99.productservice.dto.ApiResponseDto;
 import org.hanghae99.productservice.dto.ProductRequestDto;
 import org.hanghae99.productservice.dto.ProductResponseDto;
 import org.hanghae99.productservice.dto.ReStockRequestDto;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.service.ProductService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public class ProductController {
 
     @Operation(summary = "전체 상품 목록 조회", description = "로그인 없이도 이용할 수 있습니다.")
     @GetMapping("/list")
-    public ResponseEntity<Page<ProductResponseDto>> getProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<RestPage<ProductResponseDto>> getProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProducts(page, size));
     }
 

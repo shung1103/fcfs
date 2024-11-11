@@ -10,7 +10,6 @@ import org.hanghae99.orderservice.dto.WishListResponseDto;
 import org.hanghae99.orderservice.entity.WishList;
 import org.hanghae99.orderservice.service.WishListService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class WishListController {
     private final WishListService wishListService;
 
     @Operation(summary = "위시 리스트에 상품 담기")
-    @Transactional
     @PostMapping("/{productNo}")
     public ResponseEntity<ApiResponseDto> takeItem(@PathVariable Long productNo, @RequestBody WishListRequestDto wishListRequestDto, HttpServletRequest request) {
         Long userId = new ParseRequestUtil().extractUserIdFromRequest(request);
@@ -37,14 +35,12 @@ public class WishListController {
     }
 
     @Operation(summary = "위시 리스트 내부 상품 개수 수정")
-    @Transactional
     @PutMapping("/{wishListItemNo}")
     public ResponseEntity<WishListResponseDto> updateWishListItemQuantity(@PathVariable Long wishListItemNo, @RequestBody WishListRequestDto wishListRequestDto) {
         return wishListService.updateWishListItemQuantity(wishListItemNo, wishListRequestDto);
     }
 
     @Operation(summary = "위시 리스트 상품 취소")
-    @Transactional
     @DeleteMapping("/{wishListItemNo}")
     public ResponseEntity<ApiResponseDto> cancelItem(@PathVariable Long wishListItemNo) {
         return wishListService.cancelItem(wishListItemNo);

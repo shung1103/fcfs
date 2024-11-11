@@ -1,5 +1,6 @@
 package org.hanghae99.orderservice.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.orderservice.client.FeignProductService;
 import org.hanghae99.orderservice.dto.ApiResponseDto;
@@ -21,6 +22,7 @@ public class WishListService {
     private final WishListRepository wishListRepository;
     private final FeignProductService feignProductService;
 
+    @Transactional
     public ResponseEntity<ApiResponseDto> takeItem(Long productNo, WishListRequestDto wishListRequestDto, Long userId) {
         Product product = feignProductService.getProduct(productNo);
 
@@ -46,6 +48,7 @@ public class WishListService {
         return ResponseEntity.status(HttpStatus.OK).body(wishListResponseDtos);
     }
 
+    @Transactional
     public ResponseEntity<WishListResponseDto> updateWishListItemQuantity(Long wishListItemNo, WishListRequestDto wishListRequestDto) {
         WishList wishList = wishListRepository.findById(wishListItemNo).orElseThrow(() -> new NullPointerException("WishList with id " + wishListItemNo + " not found"));
         wishList.updateQuantity(wishListRequestDto.getQuantity());
@@ -53,6 +56,7 @@ public class WishListService {
         return ResponseEntity.status(HttpStatus.OK).body(new WishListResponseDto(wishList));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponseDto> cancelItem(Long wishListItemNo) {
         WishList wishList = wishListRepository.findById(wishListItemNo).orElseThrow(() -> new NullPointerException("WishList with id " + wishListItemNo + " not found"));
         wishListRepository.delete(wishList);

@@ -10,7 +10,6 @@ import org.hanghae99.orderservice.dto.OrderResponseDto;
 import org.hanghae99.orderservice.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +48,6 @@ public class OrderController {
     }
 
     // 완료된 주문 처리
-    @Transactional
     @Scheduled(cron = "0 0 * * * *") // 1시간마다 업데이트
     public void completeOrder() {
         orderService.completeOrder();

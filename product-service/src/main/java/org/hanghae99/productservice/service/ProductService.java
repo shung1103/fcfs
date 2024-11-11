@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hanghae99.productservice.client.FeignOrderService;
 import org.hanghae99.productservice.config.AES128;
+import org.hanghae99.productservice.config.RestPage;
 import org.hanghae99.productservice.dto.*;
 import org.hanghae99.productservice.entity.Product;
 import org.hanghae99.productservice.repository.ProductRepository;
@@ -48,9 +49,9 @@ public class ProductService {
 
     @Transactional
     @Cacheable(value = "Products", cacheManager = "productCacheManager")
-    public Page<ProductResponseDto> getProducts(int page, int size) {
+    public RestPage<ProductResponseDto> getProducts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAll(pageable).map(ProductResponseDto::new);
+        return new RestPage<>(productRepository.findAll(pageable).map(ProductResponseDto::new));
     }
 
     public ProductResponseDto getProduct(Long productNo) {
