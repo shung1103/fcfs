@@ -48,7 +48,7 @@ services:
       - redis
       - eureka-server
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://admin:1234@eureka-server:8761/eureka/
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - "8000:8000"

@@ -6,7 +6,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://admin:1234@eureka-server:8761/eureka/
     ports:
       - "8082:8082"
     networks:
@@ -19,7 +19,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://admin:1234@eureka-server:8761/eureka/
     ports:
       - "8081:8081"
     networks:
@@ -32,7 +32,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fcfs?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://admin:1234@eureka-server:8761/eureka/
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - "8080:8080"
