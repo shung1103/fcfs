@@ -189,6 +189,6 @@
 
 ## ERD
 
-<img width="821" alt="Untitled" src="https://www.notion.so/4-1217c084427b814094bce1bf2b0d8797?pvs=4#1347c084427b80b3ba67c5f8d3c74f6f">
+<img width="821" alt="Untitled" src="https://img.notionusercontent.com/s3/prod-files-secure%2Fdb05e416-60aa-4809-a1b9-4551feb78347%2Fb2b5422e-94b0-40f8-ace2-33a45f697073%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-10-26_%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB_8.44.02.png">
 
 <br>
