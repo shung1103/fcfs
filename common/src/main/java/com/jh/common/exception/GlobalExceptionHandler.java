@@ -36,6 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseMessage> handleGeneralException(Exception e, HttpServletRequest request, HttpServletResponse response) {
         log.error("Unexpected Error: " + e.getMessage(), e);
 
+        @SuppressWarnings("unused")
         String msgId = "";
         String msg = e.getMessage();
 

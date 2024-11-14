@@ -2,6 +2,7 @@ package com.jh.common.exception;
 
 public class BizRuntimeException extends BaseBizException {
 
+    @SuppressWarnings("unused")
     private Object additionalInfo;
 
     public BizRuntimeException(String errorMessage) {

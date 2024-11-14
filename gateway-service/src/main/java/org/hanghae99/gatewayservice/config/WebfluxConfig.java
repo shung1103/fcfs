@@ -6,6 +6,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 @Configuration
 public class WebfluxConfig  implements WebFluxConfigurer {
+    @SuppressWarnings("null")
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 

@@ -1,4 +1,4 @@
-package test.java.com.jh.common;
+package com.jh.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
