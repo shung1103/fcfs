@@ -47,6 +47,7 @@ public class RedisDao {
     /***
      * 레디스에 있는 모든 데이터를 삭제
      */
+    @SuppressWarnings("null")
     public void flushAll(){
         redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
     }

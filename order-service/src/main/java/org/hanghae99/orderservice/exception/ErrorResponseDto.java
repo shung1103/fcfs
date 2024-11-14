@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hanghae99.orderservice.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 
 @Getter
