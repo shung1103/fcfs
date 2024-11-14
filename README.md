@@ -40,13 +40,13 @@
   <img src="https://img.shields.io/badge/Java-007396?&style=flat&logo=Java&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring-6DB33F?&style=flat&logo=spring&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring Security-6DB33F?&style=flat&logo=spring security&logoColor=white" style="margin-right: 10px;">
-  <img src="https://img.shields.io/badge/Intellijidea-000000?style=flat&logo=intellijidea&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/MicroStrategy-7952B3?&style=flat&logo=MSA&logoColor=white" style="margin-right: 10px;">
 </div>
 
 <div style="display: flex; justify-content: center;">
+  <img src="https://img.shields.io/badge/Intellijidea-000000?style=flat&logo=intellijidea&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Github-181717?style=flat&logo=github&logoColor=white" style="margin-right: 10px;">
-  <img src="https://img.shields.io/badge/Slack-4A154B?style=flat&logo=Slack&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white" style="margin-right: 10px;">
 </div>
 
@@ -189,6 +189,6 @@
 
 ## ERD
 
-<img width="821" alt="Untitled" src="https://file.notion.so/f/f/d00db562-2625-4cce-9cbc-a0f0008aa8e5/66b18282-8f29-43b0-95a8-47d7045c758f/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2023-10-25_154539.png?id=dc944c0c-1e72-4dc9-9238-9a88a0eef8b8&table=block&spaceId=d00db562-2625-4cce-9cbc-a0f0008aa8e5&expirationTimestamp=1698307200000&signature=3Cd5W70GO1ojEyQRwISf-7hAHR70rAVLO-CxJIyCiPI&downloadName=%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7+2023-10-25+154539.png">
+<iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVLSYAFoc=/?moveToViewport=-2815,-948,2229,1049&embedId=495610690490" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
 
 <br>
