@@ -205,6 +205,7 @@
 <details>
 <summary>비관적 락을 적용한 선착순 구매</summary>
 <div markdown="1">
+    
 #### - 기술의 개념
 - 비관적 락이란 트랜잭션이 시작될 때 DB에 Shared Lock 또는 Exclusive Lock을 걸고 시작하는 방법
 
