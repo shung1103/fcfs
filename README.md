@@ -41,6 +41,7 @@
   <img src="https://img.shields.io/badge/Spring-6DB33F?&style=flat&logo=spring&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring Security-6DB33F?&style=flat&logo=spring security&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/MSA-D9232E?&style=flat&logo=MSA&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/Amazon API Gateway-FF4F8B?&style=flat&logo=GateWay&logoColor=white" style="margin-right: 10px;">
 </div>
 
 <div style="display: flex; justify-content: center;">
@@ -48,13 +49,15 @@
   <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Github-181717?style=flat&logo=github&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat&logo=Swagger&logoColor=white" style="margin-right: 10px;"/>
 </div>
 
 <div style="display: flex; justify-content: center;">
   <img src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=Redis&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white" style="margin-right: 10px;"/>
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white" style="margin-right: 10px;"/>
-  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat&logo=Swagger&logoColor=white" style="margin-right: 10px;"/>
+  <img src="https://img.shields.io/badge/Bitbucket-0052CC?style=flat&logo=bucket4j&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/Awselasticloadbalancing-8C4FFF?style=flat&logo=Load Balancer&logoColor=white" style="margin-right: 10px;"/>
 </div>
 
 <br>
