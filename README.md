@@ -40,7 +40,7 @@
   <img src="https://img.shields.io/badge/Java-007396?&style=flat&logo=Java&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring-6DB33F?&style=flat&logo=spring&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring Security-6DB33F?&style=flat&logo=spring security&logoColor=white" style="margin-right: 10px;">
-  <img src="https://img.shields.io/badge/MicroStrategy-7952B3?&style=flat&logo=MSA&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/MSA-D9232E?&style=flat&logo=MSA&logoColor=white" style="margin-right: 10px;">
 </div>
 
 <div style="display: flex; justify-content: center;">
@@ -189,6 +189,6 @@
 
 ## ERD
 
-<iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVLSYAFoc=/?moveToViewport=-2815,-948,2229,1049&embedId=495610690490" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+<img width="821" alt="Untitled" src="https://www.notion.so/4-1217c084427b814094bce1bf2b0d8797?pvs=4#1347c084427b80b3ba67c5f8d3c74f6f">
 
 <br>
