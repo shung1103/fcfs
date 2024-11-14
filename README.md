@@ -39,6 +39,7 @@
 <div style="display: flex; justify-content: center;">
   <img src="https://img.shields.io/badge/Java-007396?&style=flat&logo=Java&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Spring-6DB33F?&style=flat&logo=spring&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/Spring Security-6DB33F?&style=flat&logo=spring security&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Intellijidea-000000?style=flat&logo=intellijidea&logoColor=white" style="margin-right: 10px;">
 </div>
 
