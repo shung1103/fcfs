@@ -45,7 +45,7 @@
 </div>
 
 <div style="display: flex; justify-content: center;">
-  <img src="https://img.shields.io/badge/Intellijidea-000000?style=flat&logo=intellijidea&logoColor=white" style="margin-right: 10px;">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white" style="margin-right: 10px;"/>
   <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Github-181717?style=flat&logo=github&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white" style="margin-right: 10px;">
@@ -55,9 +55,9 @@
 <div style="display: flex; justify-content: center;">
   <img src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=Redis&logoColor=white" style="margin-right: 10px;">
   <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white" style="margin-right: 10px;"/>
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white" style="margin-right: 10px;"/>
   <img src="https://img.shields.io/badge/Bucket4j-0052CC?style=flat&logo=bucket4j&logoColor=white" style="margin-right: 10px;">
-  <img src="https://img.shields.io/badge/LoadBalancing-8C4FFF?style=flat&logo=Load Balancer&logoColor=white" style="margin-right: 10px;"/>
+  <img src="https://img.shields.io/badge/Ribbon-8C4FFF?style=flat&logo=Ribbon&logoColor=white" style="margin-right: 10px;"/>
+  <img src="https://img.shields.io/badge/Resilience4j-000000?style=flat&logo=Resilience4j&logoColor=white" style="margin-right: 10px;"/>
 </div>
 
 <br>
@@ -91,7 +91,7 @@
 - 소셜 로그인 가능 (구글, 카카오, 네이버)
     - 소셜 로그인 버튼 클릭 → 기존 회원이면 로그인 → 기존 회원 아니면 회원가입
 - 헤더 저장 방식 JWT이므로 Redis를 활용한 블랙 리스트 기능으로 로그아웃 구현
-- 사용자가 비밀번호 변경 시 모든 기기 로그아웃
+- 사용자가 **비밀번호 변경 시 모든 기기 로그아웃**
 
 `유저`
 - 유저 페이지에서 정보 조회, 수정, 탈퇴, 로그아웃 가능
@@ -145,6 +145,31 @@
 </details>
 
 <details>
+<summary>분산 환경에서 다른 도메인의 DB 정보 사용을 위한 FeignClient</summary>
+<div markdown="1">
+
+### - 기술의 개념
+- Spring Cloud에서 제공하는 HTTP 클라이언트로, 선언적으로 RESTful 웹 서비스를 호출
+- Eureka와 같은 서비스 디스커버리와 연동하여 동적으로 서비스 인스턴스를 조회하고 로드 밸런싱을 수행
+
+### - 왜 이 기술을 선택했는지?
+- MSA 분산 환경으로 프로젝트를 변경하고 나서 DB 정보 가져오는 방식을 변경할 필요가 생김
+- 모든 서비스가 다른 도메인의 DB 정보에 접근할 수 있도록 repository interface를 모든 마이크로 서비스마다 중복으로 생성
+    - msa 정책 의도에 맞지 않는 방식이므로 기각 -> FeignClient를 사용하기로 결정
+
+### - 기술의 장단점
+- 장점
+    - **Ribbon이 통합되어 있어 자동으로 로드 밸런싱을 수행**
+    - 라운드 로빈, 가중치 기반 등 다양한 로드 밸런싱 알고리즘 지원
+    - Failover : 요청 실패 시 다른 인스턴스로 자동 전환
+- 단점
+    - 코드의 복잡도 증가
+    - API를 호출하는 방식이기에 약간의 성능 저하 우려
+
+</div>
+</details>
+
+<details>
 <summary>헤더 저장 방식 JWT</summary>
 <div markdown="1">
 
@@ -186,7 +211,7 @@
 - RateLimitJ → 더 이상 지원 안함. Bucket4j를 사용하도록 공식 문서에 나와 있음
 - Bucket4j → 멀티스레딩 환경에서 확장성이 우수하고 높은 동시성을 지원. 로컬메모리 외에도 JDBC, Redis등과 같은 분산 환경의 DB도 지원
 - Resilience4j → 요청이 임계치를 넘겼을 때 단순히 거부하는 기능뿐만 아니라, 나중에 실행하기 위해 대기열에 저장하는 두 가지 접근방식을 제공
-- Bucket4j를 선택하여 구현하기로 결정 → Resilience4j의 경우 이미 Circuit Breaker로 사용하고 있기에 Rate Limiting 까지 사용할 경우 오버 헤드가 생길 가능성이 높다고 판단
+- **Bucket4j를 선택하여 구현하기로 결정** → Resilience4j의 경우 이미 Circuit Breaker로 사용하고 있기에 Rate Limiting 까지 사용할 경우 오버 헤드가 생길 가능성이 높다고 판단
 
 ### - 기술의 장단점
 - 장점
@@ -211,7 +236,7 @@
 - Postman : API의 성공 실패 여부에 대한 모니터링과 여러 환경에서 테스트가 가능하며, 환경 및 문서를 공유하기 위한 다양한 기능들을 제공하여 팀 간의 협업 지원
 - WebMVC Swagger : 각 마이크로 서비스마다 API 명세서를 따로 만들어 구현 난이도는 낮지만, 스케일 아웃 경우를 고려하면 오히려 사용하기 어려운 방법
 - WebFlux Swagger : 구조적이고, 읽기 쉬운 API 문서를 자동으로 생성하고, 문서에 작성된 스펙에 따라 API의 Request와 Response를 더 빠르게 검증 가능
-- 완전한 1인 개발이라 팀 간 협업이 불필요했고, 모든 마이크로 서비스들의 통합 API 명세 작성과 테스트의 편의성을 높이고 싶었기에 Swagger를 사용하기로 결정
+- 완전한 1인 개발이라 팀 간 협업이 불필요했고, 모든 마이크로 서비스들의 통합 API 명세 작성과 테스트의 편의성을 높이고 싶었기에 **Swagger를 사용하기로 결정**
 
 ### - 기술의 장단점
 - 장점
@@ -230,7 +255,7 @@
 <details>
 <summary>비관적 락을 적용한 선착순 구매</summary>
 <div markdown="1">
-    
+
 ### - 기술의 개념
 - 비관적 락이란 트랜잭션이 시작될 때 DB에 Shared Lock 또는 Exclusive Lock을 걸고 시작하는 방법
 
@@ -238,7 +263,7 @@
 - 낙관적 락 : 충돌이 거의 발생하지 않는다고 가정하는 락. DB가 아닌 앱에서 제공하는 버전관리 기능을 통해 구현. 최근 업데이트 과정에서만 락을 점유하기 때문에 락 점유시간을 최소화하여 동시성 처리
 - 비관적 락 : 충돌이 자주 발생하는 것을 가정하는 락. DB 단의 Lock을 통해서 동시성을 제어하기 때문에 확실하게 데이터 정합성이 보장. 트랜잭션을 점유하기에 성능이 약간 감소
 - Redis 분산 락 : 서버가 여러대인 상황에서 동일한 데이터에 대한 동기화를 보장하기 위해 사용. 트랜잭션 종료 시에 Lock 해제, 세션 관리 등을 수동으로 처리해야 하기 때문에 구현이 복잡
-- 특정 시간에 선착순 구매를 진행하는 프로젝트 특성 상 비관적 락을 거는 편이 낙관적 락에 비해 성능 상 유리. 분산 락에 비해서도 성능 차이가 거의 없어 비관적 락을 사용하기로 선택
+- 특정 시간에 선착순 구매를 진행하는 프로젝트 특성 상 비관적 락을 거는 편이 낙관적 락에 비해 성능 상 유리. 분산 락에 비해서도 성능 차이가 거의 없어 **비관적 락을 사용하기로 결정**
 
 ### - 기술의 장단점
 - 장점
@@ -260,8 +285,9 @@
 - Resilience4j는 서킷 브레이커 라이브러리로, 서비스 간의 호출 실패를 감지하고 시스템의 안정성을 유지. 다양한 서킷 브레이커 기능을 제공하며, 장애 격리 및 빠른 실패를 통해 복원력 유지
 
 ### - 왜 이 기술을 선택했는지?
-- hystrix : 공식 github repository에도 Hystrix는 더이상 개발상태가 아닌 유지보수 상태(maintenance mode)라고 공식적으로 명시
-- 서킷 브레이커 상태 클로즈드, 오픈, 하프-오픈 상태를 통해 호출 실패를 관리
+- Eureka와 OpenFeign을 같이 사용할 때 Feign Client에 특정 url을 지정하지 않으면 ribbon을 통한 로드 밸런싱과 hystrix를 사용한 서킷 브레이커 기능을 자동으로 제공
+- 공식 github repository에 Hystrix는 더이상 개발상태가 아닌 유지보수 상태(maintenance mode)라고 공식적으로 명시되어 있기에 resilience4j를 대신 사용하기로 결정
+- resilience4j는 서킷 브레이커 상태를 클로즈드, 오픈, 하프-오픈 상태로 나누어 호출 실패를 체계적으로 관리
 - Fallback Factory를 통해 호출 실패 시 대체 로직을 제공하여 시스템 안정성 확보
 - 서킷 브레이커 상태를 모니터링하고 관리할 수 있는 다양한 도구 제공
 
@@ -274,7 +300,7 @@
 
 <details>
 <summary>JWT의 보안적 취약성</summary>
-<div markdown="1">       
+<div markdown="1">
 
 - 만료 기한이 짧은 엑세스 토큰과 만료 기한이 긴 리프레시 토큰을 사용
 - 리프레시 토큰은 영구적으로 보관할 필요가 없으니 속도가 빠른 레디스를 저장소로 사용
@@ -284,11 +310,17 @@
 </details>
 
 <details>
-<summary>Redis 키 조회 시 병목현상 발생</summary>
-<div markdown="1">       
+<summary>게이트 웨이 설정</summary>
+<div markdown="1">
 
-- Redis는 단일 쓰레드 아키텍쳐이기에 처리가 오래 걸리는 명령을 요청할 경우 그 동작이 마무리 될 때가지 다른 요청을 멈춰두게 되어 병목현상이 발생하게 된다. 특히나 keys, flushall 등의 명령어는 테스트나 소량의 데이터 환경에서는 괜찮지만 점차 데이터를 쌓아가는 환경에서는 운영에 차질을 빚을 정도로 속도가 느려지는 문제가 있다.
-- keys 명령어를 scan으로 대체하여 병목 현상을 최소화.
+- 모든 마이크로 서비스의 API 호출이 반드시 게이트 웨이를 경유하게 변경
+    - 모든 마이크로 서비스에 Spring Security 설정 -> 인증, 인가는 게이트 웨이에서 통합 관리하는 편이 훨씬 효율적이므로 기각
+    - 모든 마이크로 서비스에 CORS 설정 -> 게이트 웨이에서 통합 관리하는 편이 효율적이며, 게이트 웨이의 CORS 설정과 충돌 가능성 존재
+    - 모든 API 호출에 게이트 웨이를 경유했는지 헤더를 검증하는 로직 추가 -> 선택
+- 게이트 웨이의 설정 파일을 만듦에 있어 프로젝트 실행 로그에 게이트 웨이 내부의 동작 방식이나 에러 원인이 정확히 나오지 않아서 문제 해결에 어려움 발생
+    - 로그 레벨을 변경하여 **게이트 웨이 내부의 동작 방식을 이해**하고 정확한 **에러 원인 확인**
+    - 첫 번째 시도 : root 로그 레벨을 Trace나 Debug로 설정 후 테스트 -> 로그가 너무 많아 에러 원인을 찾을 수 없음
+    - 두 번째 시도 : `org.springframework.cloud.gateway: TRACE` 를 적용하여 딱 원하는 부분을 찾을 수 있었음 → 문제 해결
 
 </div>
 </details>
@@ -297,8 +329,45 @@
 <summary>Redis 캐시를 적용하여 성능 향상</summary>
 <div markdown="1">       
 
-- FCFS 주문 사이트에서 가장 중요도가 높으면서 조회 빈도도 높은 메인 페이지 상품 목록 조회에 Redis Cache를 적용하여 성능을 향상
-- 처음 조회할 때는 650ms 이상이 소요되었지만, 캐시를 적용하고 나서는 평균적으로 60ms 대를 기록하여 약 10배에 가까운 성능 향상
+- FCFS 주문 사이트에서 가장 중요도가 높으면서 조회 빈도도 높은 메인 페이지 상품 목록 조회에 Redis Cache를 적용하여 성능을 향상
+- 처음 조회할 때는 650ms 이상이 소요되었지만, 캐시를 적용하고 나서는 평균적으로 60ms 대를 기록하여 **약 10배에 가까운 성능 향상**
+
+</div>
+</details>
+
+<details>
+<summary>상품 재입고 알림</summary>
+<div markdown="1">       
+
+- 상품 재입고 시 해당 상품을 위시 리스트에 등록한 모든 유저에게 재입고 알림을 전송
+    - polling 방식 : http 오버헤드로 인해 서버의 부담 증가 -> 기각
+    - WebSocket 방식 : 양방향 통신일 필요가 없음 -> 기각
+    - SSE 방식 : 사용자가 앱을 켜두고 있지 않을 경우 전송되지 않음 -> 기각
+    - Email 방식 : 처리 속도가 느리지만 사용자가 인터넷에 연결만 되있으면 실시간 알림 가능 -> 선택
+- 재입고 알림 메일 발송을 비동기로 처리하여 API 동작 속도 **약 7배 향상** 2640ms -> 380ms
+
+</div>
+</details>
+
+<details>
+<summary>비밀번호 변경 시 모든 기기 로그아웃</summary>
+<div markdown="1">       
+
+- 비밀번호 변경 시 모든 기기 로그아웃을 구현하기 위해 유저 엔티티에 Integer passwordChangeCount를 컬럼으로 추가하여 사용
+    - Integer의 경우 21억 이상이 될 경우 에러 발생
+- UUID를 사용하여 랜덤 숫자열을 사용하기로 결정
+    - Integer passwordChangeCount -> String passwordVersion 로 변경하여 사용
+
+</div>
+</details>
+
+<details>
+<summary>커스텀 JWT 설정과 AbstractGatewayFilter의 호환성 문제</summary>
+<div markdown="1">       
+
+- 본인이 커스텀한 JWT 설정은 subject로 username을 가져오고 사용자의 권한을 'auth'라는 키값의 밸류로 저장
+- AbstractGatewayFilter의 기본 설정에서는 JWT에 'username'이라는 키값과 'role'이라는 키값이 있어야만 유저 정보를 각 마이크로 서비스에 전송 가능
+- 시간이 한정되어 있었기에 AbstractGatewayFilter의 설정을 커스텀해서 사용하기 보다는 **JWT의 claim을 변경하여 문제를 해결**
 
 </div>
 </details>
