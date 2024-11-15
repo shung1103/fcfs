@@ -375,7 +375,32 @@
 <br>
 
 ## API 명세서
-[API 명세](https://www.notion.so/API-ca5b9b8b15bd447d938655eeba8844e6?pvs=21)
+<details>
+<summary>USER-SERVICE</summary>
+<div markdown="1">       
+
+![user-service](https://github.com/user-attachments/assets/628c8b4b-9ca6-42e5-96f7-48e0aa434764)
+
+</div>
+</details>
+
+<details>
+<summary>PRODUCT-SERVICE</summary>
+<div markdown="1">       
+
+![product-service](https://github.com/user-attachments/assets/89e9e216-23e3-4c1b-9462-84440c9fe8e6)
+
+</div>
+</details>
+
+<details>
+<summary>ORDER-SERVICE</summary>
+<div markdown="1">       
+
+![order-service](https://github.com/user-attachments/assets/b64f1fad-46bb-4dbd-b81f-ed12fa5ab0b9)
+
+</div>
+</details>
 
 <br>
 
