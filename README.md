@@ -87,7 +87,7 @@
 ## 💫 도메인 기능
 
 <details>
-<summary>`회원가입 / 로그인`</summary>
+<summary>회원가입 / 로그인</summary>
 <div markdown="1">
 
 - 유저는 회원가입 시 이메일 인증을 해야한다.
@@ -100,7 +100,7 @@
 </details>
 
 <details>
-<summary>`유저`</summary>
+<summary>유저</summary>
 <div markdown="1">
 
 - 유저 페이지에서 정보 조회, 수정, 탈퇴, 로그아웃 가능
@@ -111,7 +111,7 @@
 </details>
 
 <details>
-<summary>`상품`</summary>
+<summary>상품</summary>
 <div markdown="1">
 
 - 회원 가입이나 로그인 하지 않아도 전체 상품 목록, 단일 상품 정보 조회 가능
@@ -122,7 +122,7 @@
 </details>
 
 <details>
-<summary>`위시 리스트`</summary>
+<summary>위시 리스트</summary>
 <div markdown="1">
 
 - 사용자가 재입고 알림을 받기를 원하는 상품을 위시 리스트에 등록 가능
@@ -132,7 +132,7 @@
 </details>
 
 <details>
-<summary>`주문`</summary>
+<summary>주문</summary>
 <div markdown="1">
 
 - 주문 생성, 조회, 삭제 가능. 주문을 수정하려면 주문 취소 후 재주문으로 가능
