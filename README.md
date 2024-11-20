@@ -78,6 +78,12 @@
 8. bucket4j를 사용한 rate limiter로 초당 처리율을 제한하여 자원 고갈 방지
 9. ribbon과 resilience4j를 사용하여 로드 밸런싱과 서킷 브레이커 구현
 10. 비관적 락을 사용하여 누락없는 재고 동시성 처리 구현
+    - jmeter로 동시 주문 1,000번 시행 테스트 -> tps 약 200
+
+![스크린샷 2024-11-09 오후 3 05 04](https://github.com/user-attachments/assets/fb607597-0feb-4969-b516-b09d3025f7e0)
+
+![스크린샷 2024-11-09 오후 3 05 15](https://github.com/user-attachments/assets/ec6c54fe-5d8b-40b7-bf5a-033c2b0fd2d6)
+
 11. Docker 사용 - 개발 환경과 동일한 환경으로 안정적인 프로그램 구동 및 배포, 확장 가능
 
 <br>
