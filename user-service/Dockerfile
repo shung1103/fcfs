@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN gradle :user-service:build -x test --no-daemon
+RUN chmod +x ./gradlew	#gradlew 실행 권한 부여
+RUN ./gradlew bootJar	#gradlew를 통해 실행 가능한 jar파일 생성
 
 FROM openjdk:21-jdk
 
