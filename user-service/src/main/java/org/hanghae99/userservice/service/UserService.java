@@ -105,13 +105,13 @@ public class UserService {
     public void logout(HttpServletRequest request, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("User not found."));
 
-        String username = user.getUsername();
+        String passwordVersion = user.getPasswordVersion();
         String accessToken = jwtUtil.resolveToken(request);
         Long expiration = jwtUtil.getExpiration(accessToken);
         // 레디스에 accessToken 사용못하도록 등록
         redisDao.setBlackList(accessToken, "logout", expiration);
 
-        if (redisDao.hasKey(username)) redisDao.deleteRefreshToken(username);
+        if (redisDao.hasKey(passwordVersion)) redisDao.deleteRefreshToken(passwordVersion);
         else throw new IllegalArgumentException("이미 로그아웃한 유저입니다.");
         // 소셜 로그인 유저의 경우 로그 아웃 시 비밀번호를 바꿔 모든 기기 로그 아웃
         if (user.getSocial() != null) {
