@@ -43,4 +43,3 @@ public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Co
         private boolean postLogger;
     }
 }
-// github push 확인용
